@@ -434,9 +434,9 @@ export default function ProblemSolution() {
         </div>
       </section>
 
-      <WaveDivider color="var(--color-surface)" />
+      <WaveDivider color="#FEF0F5" />
 
-      <section id="solution" data-chapter="chapter two · the solution" style={{ background: 'var(--color-surface)', padding: isMobile ? '80px 24px' : '160px 48px', position: 'relative' }}>
+      <section id="solution" data-chapter="chapter two · the solution" style={{ background: '#FEF0F5', padding: isMobile ? '80px 24px' : '160px 48px', position: 'relative' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="chapter-label" style={{ display: 'block', marginBottom: 32 }}>chapter two · the solution</span>

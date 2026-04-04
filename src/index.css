@@ -190,13 +190,11 @@
   color: var(--lp-brown);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.landing-page-root body {
   cursor: none;
   overflow-x: hidden;
   /* Base page gradient - smooths section transistions */
   background: linear-gradient(180deg, #FFF4EE 0%, #FEF0F5 50%, #F5EFFF 100%);
+  min-height: 100vh;
 }
 
 .landing-page-root * {
@@ -205,7 +203,7 @@
 
 /* Re-enable default cursor on touch */
 @media (pointer: coarse) {
-  .landing-page-root body { cursor: auto; }
+  .landing-page-root { cursor: auto; }
   .landing-page-root * { cursor: auto; }
 }
 
