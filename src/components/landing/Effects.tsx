@@ -101,7 +101,7 @@ export function ScrambleNumber({
           animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 10 }}
           transition={{ delay: 0.6 }}
           style={{
-            fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#A08C80',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#7A665A',
             marginTop: 16, zIndex: 2
           }}
         >

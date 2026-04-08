@@ -31,8 +31,8 @@ export const Sidebar = () => {
           "flex items-center py-3 rounded-xl transition-all duration-300 ease-in-out group text-[14px]",
           isExpanded ? "px-3 gap-3" : "px-0 justify-center w-[48px] mx-auto",
           isActive 
-            ? "bg-[#E6E2DA] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] text-teal-800 font-medium" 
-            : "text-slate-600 font-medium hover:bg-[#EAE7DF] hover:text-slate-800"
+            ? "bg-white/60 shadow-[inset_0_1px_2px_rgba(255,255,255,0.6)] text-teal-800 font-medium border border-white/40" 
+            : "text-slate-600 font-medium hover:bg-white/40 hover:text-slate-800 border border-transparent"
         )}
       >
         <Icon 
@@ -54,7 +54,7 @@ export const Sidebar = () => {
 
   return (
     <div className={cn(
-      "hidden md:flex flex-col h-full bg-[#F0EDE8] border-r border-[#E6E2DA] shrink-0 transition-all duration-300 ease-in-out",
+      "hidden md:flex flex-col h-full bg-white/30 backdrop-blur-md border-r border-white/60 shrink-0 z-20 transition-all duration-300 ease-in-out",
       isExpanded ? "w-[260px]" : "w-[80px]"
     )}>
       

@@ -133,14 +133,14 @@ export default function Hero() {
           transition={{ delay: 4.4, duration: 1 }}
           style={{ display: 'flex', alignItems: 'center', gap: 32, marginTop: 56 }}
         >
-          <a onClick={(e) => { e.preventDefault(); navigate('/auth'); }} data-hover className="blob-btn" style={{
+          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="blob-btn" style={{
             padding: '24px 40px', fontSize: 18, fontWeight: 600, textDecoration: 'none', display: 'inline-block', cursor: 'pointer'
           }}>
             Begin Your Journey →
           </a>
           
           <a href="#how-it-works" data-hover className="nav-link" style={{ 
-            fontSize: 16, color: '#A08C80', borderBottom: '1px solid rgba(160,140,128,0.3)', paddingBottom: 4 
+            fontSize: 16, color: '#7A665A', borderBottom: '1px solid rgba(160,140,128,0.3)', paddingBottom: 4 
           }}>
             Watch how it works ↓
           </a>
@@ -214,9 +214,9 @@ export default function Hero() {
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 5.5, duration: 1 }}
         style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}
       >
-        <span style={{ fontSize: 12, color: '#A08C80', fontWeight: 300, letterSpacing: 1 }}>scroll to understand</span>
+        <span style={{ fontSize: 12, color: '#7A665A', fontWeight: 300, letterSpacing: 1 }}>scroll to understand</span>
         <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A08C80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7A665A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
         </motion.div>
       </motion.div>
 

@@ -191,7 +191,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   cursor: none;
-  overflow-x: hidden;
+  overflow-x: clip;
   /* Base page gradient - smooths section transistions */
   background: linear-gradient(180deg, #FFF4EE 0%, #FEF0F5 50%, #F5EFFF 100%);
   min-height: 100vh;
@@ -652,7 +652,7 @@
 
 /* ── OVERFLOW PREVENTION ── */
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100vw;
 }
 

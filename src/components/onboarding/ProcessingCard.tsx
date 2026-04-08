@@ -21,48 +21,45 @@ export const ProcessingCard = ({ userName }: ProcessingCardProps) => {
         currentIndex++;
       } else {
         clearInterval(intervalId);
-        // Show next line after 0.8 seconds
+        // Show next line after 2 seconds
         setTimeout(() => {
           setShowSetup(true);
-        }, 800);
+        }, 2000);
       }
-    }, 80);
+    }, 150);
 
     return () => clearInterval(intervalId);
   }, [fullText]);
 
   return (
-    <div className="flex flex-col flex-1 w-full items-center justify-center min-h-[300px]">
+    <div className="flex flex-col w-full h-[100dvh] items-center justify-center relative -mt-10">
       {/* Ripple Animation */}
-      <div className="relative w-32 h-32 flex items-center justify-center mb-8 shrink-0">
+      <div className="relative w-48 h-48 flex items-center justify-center mb-10 shrink-0">
         {/* Core center dot */}
         <div className="absolute w-4 h-4 bg-[#5BA8A0] rounded-full z-10" />
         
         {/* Concentric expanding ripples */}
-        <div className="absolute w-12 h-12 border-2 border-[#5BA8A0]/60 rounded-full animate-ripple-expand" style={{ animationDelay: "0s" }} />
-        <div className="absolute w-12 h-12 border-2 border-[#5BA8A0]/40 rounded-full animate-ripple-expand" style={{ animationDelay: "0.6s" }} />
-        <div className="absolute w-12 h-12 border-2 border-[#5BA8A0]/20 rounded-full animate-ripple-expand" style={{ animationDelay: "1.2s" }} />
+        <div className="absolute w-16 h-16 border-2 border-[#5BA8A0]/60 rounded-full animate-ripple-expand" style={{ animationDelay: "0s" }} />
+        <div className="absolute w-16 h-16 border-2 border-[#5BA8A0]/40 rounded-full animate-ripple-expand" style={{ animationDelay: "0.8s" }} />
+        <div className="absolute w-16 h-16 border-2 border-[#5BA8A0]/20 rounded-full animate-ripple-expand" style={{ animationDelay: "1.6s" }} />
       </div>
 
-      <div className="text-center h-20 flex flex-col items-center gap-4">
+      <div className="text-center flex flex-col items-center gap-6">
         <h2 
-          className="text-[22px] sm:text-[26px] font-semibold text-slate-800 min-h-[32px] tracking-tight"
+          className="text-[24px] sm:text-[30px] font-semibold text-slate-800 tracking-tight"
           style={{ fontFamily: "var(--font-heading)" }}
         >
           {displayedText}
-          <span className="animate-pulse opacity-50 ml-1 text-teal-400">|</span>
+          {!showSetup && <span className="animate-pulse opacity-50 ml-1 text-[#5BA8A0]">|</span>}
         </h2>
 
         <div
-          className={`transition-opacity duration-600 ease-in-out ${
+          className={`transition-opacity duration-[1000ms] ease-in-out ${
             showSetup ? "opacity-100" : "opacity-0"
           }`}
         >
-          <p 
-            className="text-[17px] text-slate-500 font-medium italic"
-            style={{ fontFamily: "var(--font-serif)" }}
-          >
-            Setting up your space...
+          <p className="text-[18px] sm:text-[20px] text-slate-500 font-medium">
+            We're getting your space ready.
           </p>
         </div>
       </div>

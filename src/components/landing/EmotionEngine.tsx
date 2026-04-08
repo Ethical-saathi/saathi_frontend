@@ -32,10 +32,10 @@ const sentences = [
     raw: "I'm fine.",
     words: [
       { text: "I'm", emotion: "neutral" },
-      { text: "fine.", emotion: "deflection", color: "#A08C80" },
+      { text: "fine.", emotion: "deflection", color: "#7A665A" },
     ],
     stats: [
-      { label: "Deflection", value: 89, color: "#A08C80" },
+      { label: "Deflection", value: 89, color: "#7A665A" },
       { label: "Masked Anxiety", value: 65, color: "#F4845F" },
       { label: "Isolation", value: 44, color: "#C9A0DC" }
     ]
@@ -300,7 +300,7 @@ export default function EmotionEngine() {
               {!activeId ? (
                  <div style={{ 
                     height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                    fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#A08C80', fontStyle: 'italic',
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#7A665A', fontStyle: 'italic',
                     paddingTop: 180, zIndex: 10 
                  }}>
                    Waiting for input... Select a thought below.

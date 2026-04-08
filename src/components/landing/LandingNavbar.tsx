@@ -55,7 +55,7 @@ export function LandingNavbar() {
               {link}
             </a>
           ))}
-          <a onClick={(e) => { e.preventDefault(); navigate('/auth'); }} data-hover className="blob-btn" style={{
+          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="blob-btn" style={{
             padding: '12px 28px', fontSize: 14, fontWeight: 500, fontFamily: 'var(--font-body)', textDecoration: 'none', cursor: 'pointer'
           }}>
             Begin Your Journey →
@@ -103,7 +103,7 @@ export function LandingNavbar() {
                 {link}
               </a>
             ))}
-            <a onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/auth'); }} className="blob-btn" style={{
+            <a onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/onboarding'); }} className="blob-btn" style={{
               padding: '20px 48px', fontSize: 18, fontWeight: 500, fontFamily: 'var(--font-body)', textDecoration: 'none', marginTop: 32, cursor: 'pointer'
             }}>
               Begin Your Journey →

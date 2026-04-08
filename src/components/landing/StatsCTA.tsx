@@ -70,7 +70,7 @@ export default function StatsCTA() {
               <div style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: isMobile ? '13px' : 'clamp(12px, 1.2vw, 14px)',
-                color: '#A08C80',
+                color: '#7A665A',
                 lineHeight: 1.5,
                 textAlign: 'center',
                 maxWidth: 180,
@@ -101,14 +101,14 @@ export default function StatsCTA() {
             Be among the first to experience an AI<br/>that truly knows you.
           </p>
 
-          <a onClick={(e) => { e.preventDefault(); navigate('/auth'); }} data-hover className="blob-btn breathing-slow" style={{
+          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="blob-btn breathing-slow" style={{
             display: 'inline-block', padding: isMobile ? '20px 40px' : '28px 64px', fontSize: isMobile ? 18 : 22, fontWeight: 700,
             textDecoration: 'none', fontFamily: 'var(--font-body)', letterSpacing: 1, cursor: 'pointer'
           }}>
             Begin Your Journey →
           </a>
           
-          <div style={{ marginTop: 32, fontSize: 13, color: '#A08C80', letterSpacing: 1, textTransform: 'uppercase', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16 }}>
+          <div style={{ marginTop: 32, fontSize: 13, color: '#7A665A', letterSpacing: 1, textTransform: 'uppercase', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16 }}>
             <span>No credit card required</span><span>·</span>
             <span>Your privacy is sacred</span><span>·</span>
             <span>Cancel anytime</span>
@@ -120,14 +120,14 @@ export default function StatsCTA() {
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Logo size={40} />
           
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: '#A08C80', fontStyle: 'italic', marginTop: 32, marginBottom: 80 }}>
+          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: '#7A665A', fontStyle: 'italic', marginTop: 32, marginBottom: 80 }}>
             "Built with care, for the people who need it most."
           </div>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 32, margin: '0 0 32px' }}>
             <span style={{ fontSize: 14, color: '#2D1B0E', fontWeight: 600 }}>AI Saathi © 2025</span>
             {['Privacy Policy', 'Terms', 'Contact us'].map(l => (
-              <a key={l} href="#" data-hover style={{ fontSize: 14, color: '#A08C80', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={e=>e.currentTarget.style.color='#F4845F'} onMouseOut={e=>e.currentTarget.style.color='#A08C80'}>{l}</a>
+              <a key={l} href="#" data-hover style={{ fontSize: 14, color: '#7A665A', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={e=>e.currentTarget.style.color='#F4845F'} onMouseOut={e=>e.currentTarget.style.color='#7A665A'}>{l}</a>
             ))}
           </div>
         </div>

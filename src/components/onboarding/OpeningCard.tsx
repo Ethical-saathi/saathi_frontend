@@ -1,4 +1,4 @@
-import { Hand } from "lucide-react";
+import { CloudRain, Wind, Meh, Smile, Sun } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -7,9 +7,15 @@ interface OpeningCardProps {
   onSkip: () => void;
 }
 
-const MOODS = ["Struggling", "Anxious", "Okay", "Alright", "Good"];
+const MOODS = [
+  { id: "struggling", label: "Struggling", icon: CloudRain, color: "text-blue-500", bg: "bg-blue-50 border-blue-200 hover:bg-blue-100" },
+  { id: "anxious", label: "Anxious", icon: Wind, color: "text-indigo-500", bg: "bg-indigo-50 border-indigo-200 hover:bg-indigo-100" },
+  { id: "okay", label: "Okay, I think", icon: Meh, color: "text-slate-500", bg: "bg-slate-50 border-slate-200 hover:bg-slate-100" },
+  { id: "alright", label: "Alright", icon: Smile, color: "text-teal-500", bg: "bg-teal-50 border-teal-200 hover:bg-teal-100" },
+  { id: "good", label: "Pretty good", icon: Sun, color: "text-amber-500", bg: "bg-amber-50 border-amber-200 hover:bg-amber-100" },
+];
 
-export const OpeningCard = ({ onNext, onSkip }: OpeningCardProps) => {
+export const OpeningCard = ({ onNext }: OpeningCardProps) => {
   const [name, setName] = useState("");
   const [mood, setMood] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
@@ -17,90 +23,106 @@ export const OpeningCard = ({ onNext, onSkip }: OpeningCardProps) => {
   const handleNext = () => {
     if (name.trim().length === 0) {
       setShake(true);
-      setTimeout(() => setShake(false), 300);
+      setTimeout(() => setShake(false), 400);
       return;
     }
-    // Proceed if name is valid. If mood is missing, it passes null. (Prompt says activates if name > 0 AND mood selected)
-    // Actually the prompt says: "Right: 'Next ->' button - activates only when name has at least 1 character AND a mood is selected"
     if (name.trim().length > 0 && mood) {
       onNext(name.trim(), mood);
-    } else if (name.trim().length === 0) {
-      setShake(true);
-      setTimeout(() => setShake(false), 300);
+    } else if (name.trim().length > 0) {
+       // if they didn't select a mood, make the mood section shake
+       setShake(true);
+       setTimeout(() => setShake(false), 400);
     }
   };
 
   const isNextActive = name.trim().length > 0 && mood !== null;
 
   return (
-    <div className="flex flex-col w-full items-center text-center">
-      <div className="w-16 h-16 rounded-2xl bg-white/50 backdrop-blur-sm shadow-[inset_0_2px_10px_rgba(255,255,255,0.8)] border border-white/60 flex items-center justify-center mx-auto mb-4 shrink-0">
-        <Hand className="w-8 h-8 text-teal-600 drop-shadow-sm" strokeWidth={1.5} />
-      </div>
+    <div className="flex flex-col w-full items-center text-center max-w-[600px] mx-auto p-4">
+      {/* Top soft text */}
+      <h3 className="text-[14px] font-medium text-slate-400 mb-6 tracking-wide uppercase">
+        This is just between us.
+      </h3>
 
+      {/* Main Question */}
       <h2 
-        className="text-[24px] sm:text-[32px] font-semibold text-slate-800 mb-5 leading-snug tracking-[-1px] shrink-0"
+        className="text-[28px] sm:text-[36px] font-semibold text-slate-800 mb-8 leading-snug tracking-[-1px] shrink-0"
         style={{ fontFamily: "var(--font-heading)" }}
       >
-        Before we begin &mdash; what should we <span className="italic text-teal-700 font-normal" style={{ fontFamily: "var(--font-serif)" }}>call you?</span>
+        What should we call you?
       </h2>
 
+      {/* Name Input */}
       <input
         type="text"
-        placeholder="Your first name"
+        placeholder="Just your first name is fine"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className={cn(
-          "w-full sm:w-[80%] clay-input text-slate-800 text-center text-[18px] py-4 mb-5 placeholder:text-slate-400 shrink-0",
-          shake && "animate-shake-horizontal"
+          "w-full sm:w-[75%] bg-transparent border-b-2 border-slate-300 focus:border-[#5BA8A0] text-slate-800 text-center text-[22px] sm:text-[26px] py-3 mb-10 placeholder:text-slate-300 outline-none transition-colors",
+          shake && name.trim().length === 0 && "animate-shake-horizontal border-red-300"
         )}
       />
 
+      {/* Emotion Selection (Fades in gently) */}
       <div
         className={cn(
-          "w-full flex flex-col items-center transition-opacity duration-300 ease-in-out shrink-0",
-          name.length > 0 ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          "w-full flex flex-col items-center transition-all duration-700 ease-in-out shrink-0",
+          name.length > 0 ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
         )}
       >
-        <p className="text-[17px] text-slate-600 mb-4 font-medium">
-          And how are you feeling right now?
+        <p className="text-[18px] sm:text-[20px] text-slate-600 mb-8 font-medium">
+          And how are you feeling right now, <span className="text-[#5BA8A0] capitalize">{name.trim()}</span>?
         </p>
 
-        <div className="flex flex-wrap justify-center gap-2.5 mb-6 w-full sm:w-[90%]">
-          {MOODS.map((m) => (
-            <button
-              key={m}
-              onClick={() => setMood(m)}
-              className={cn(
-                "px-6 py-2.5 rounded-full text-[15px] font-semibold transition-all duration-300 ease-in-out clay-button",
-                mood === m
-                  ? "bg-gradient-to-r from-teal-400 to-emerald-400 text-white shadow-[inset_1px_1px_2px_rgba(255,255,255,0.4)]"
-                  : "bg-white text-slate-600 hover:text-teal-600"
-              )}
-            >
-              {m}
-            </button>
-          ))}
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12 w-full">
+          {MOODS.map((m) => {
+            const Icon = m.icon;
+            const isSelected = mood === m.id;
+            return (
+              <button
+                key={m.id}
+                onClick={() => setMood(m.id)}
+                className={cn(
+                  "flex flex-col items-center gap-3 transition-all duration-300 ease-out group",
+                  shake && name.trim().length > 0 && !mood ? "animate-shake-horizontal" : ""
+                )}
+              >
+                <div 
+                  className={cn(
+                    "w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border transition-all duration-300 shadow-sm",
+                    m.bg,
+                    isSelected ? "ring-4 ring-[#5BA8A0]/30 scale-110 shadow-md border-transparent" : "grayscale-[50%] hover:scale-105"
+                  )}
+                >
+                  <Icon className={cn("w-8 h-8 sm:w-10 sm:h-10 transition-colors", m.color, isSelected ? "" : "opacity-70")} strokeWidth={1.5} />
+                </div>
+                <span className={cn(
+                  "text-[14px] sm:text-[15px] font-medium transition-colors",
+                  isSelected ? "text-slate-800" : "text-slate-500 group-hover:text-slate-700"
+                )}>
+                  {m.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="flex items-center justify-between w-full mt-4">
-        <button
-          onClick={onSkip}
-          className="text-[14px] text-slate-400 font-medium hover:text-slate-600 transition-colors"
-        >
-          Skip for now
-        </button>
+      <div className={cn(
+        "flex w-full sm:w-[60%] shrink-0 transition-all duration-700 delay-100",
+        name.length > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+      )}>
         <button
           onClick={handleNext}
           className={cn(
-            "flex items-center gap-1.5 px-6 py-2.5 rounded-full text-[15px] font-semibold transition-all duration-300 clay-button",
+            "clay-button w-full py-4 rounded-full text-[18px] font-semibold transition-all duration-500",
             isNextActive
-              ? "bg-gradient-to-r from-teal-400 to-emerald-400 text-white"
-              : "opacity-50 grayscale cursor-not-allowed"
+              ? "bg-gradient-to-r from-teal-400 to-emerald-400 text-white shadow-lg hover:shadow-xl hover:-translate-y-1"
+              : "bg-slate-200 text-slate-400 cursor-not-allowed"
           )}
         >
-          Next <span>&rarr;</span>
+          Continue
         </button>
       </div>
     </div>

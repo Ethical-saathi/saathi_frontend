@@ -30,7 +30,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+            {/* Temporarily unprotected so you can test the UI without Supabase email issues */}
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
               <Route path="/home" element={<Home />} />
               <Route path="/chat" element={<Chat />} />

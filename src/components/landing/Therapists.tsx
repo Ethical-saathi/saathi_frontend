@@ -8,7 +8,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 // ─── Typing indicator component ──────────────────────────────────────────────
-function TypingIndicator({ color = '#A08C80' }: { color?: string }) {
+function TypingIndicator({ color = '#7A665A' }: { color?: string }) {
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '10px 14px' }}>
       {[0, 1, 2].map(i => (
@@ -49,7 +49,7 @@ function AIBubble({ text, timestamp, softer = false }: { text: string; timestamp
     >
       {text}
       <div style={{
-        fontSize: 10, color: '#A08C80', marginTop: 6, textAlign: 'right',
+        fontSize: 10, color: '#7A665A', marginTop: 6, textAlign: 'right',
         fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
       }}>
         {timestamp}
@@ -350,7 +350,7 @@ function HandoffChat({ isMobile, onWarmShift }: { isMobile: boolean; onWarmShift
               <span style={{
                 fontSize: 11,
                 fontWeight: 400,
-                color: '#A08C80',
+                color: '#7A665A',
               }}>
                 · Licensed Therapist
               </span>
@@ -673,13 +673,13 @@ export default function Therapists() {
                 zIndex: 10
               }}
             >
-              <div style={{ fontSize: isMobile ? 9 : 11, fontWeight: 700, color: session.glow ? '#E06B45' : '#A08C80', letterSpacing: 2 }}>{session.date}</div>
+              <div style={{ fontSize: isMobile ? 9 : 11, fontWeight: 700, color: session.glow ? '#E06B45' : '#7A665A', letterSpacing: 2 }}>{session.date}</div>
               <div style={{ fontFamily: "'Playfair Display', serif", fontSize: session.glow ? (isMobile ? 32 : 48) : (isMobile ? 24 : 36), fontWeight: 900, color: '#2D1B0E', marginTop: 8 }}>{session.n}</div>
               
               {/* Unique micro waveform per session */}
               {!isMobile && (
                 <svg width="60" height="20" viewBox="0 0 60 20" style={{ marginTop: 12 }}>
-                  <path d={`M0,10 Q${10+i*5},${i===1?0:20} ${20+i*5},10 T60,10`} fill="none" stroke={session.glow ? "#F4845F" : "#A08C80"} strokeWidth="1.5" strokeLinecap="round" opacity={session.glow ? 1 : 0.4}/>
+                  <path d={`M0,10 Q${10+i*5},${i===1?0:20} ${20+i*5},10 T60,10`} fill="none" stroke={session.glow ? "#F4845F" : "#7A665A"} strokeWidth="1.5" strokeLinecap="round" opacity={session.glow ? 1 : 0.4}/>
                 </svg>
               )}
             </motion.div>
@@ -735,7 +735,7 @@ export default function Therapists() {
             </h2>
             <p className="body-airy" style={{
               fontSize: 17, maxWidth: 480, margin: '0 auto',
-              color: '#A08C80', opacity: 0.6,
+              color: '#7A665A', opacity: 0.6,
             }}>
               AI Saathi knows its limits.
             </p>
@@ -768,7 +768,7 @@ export default function Therapists() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: 13,
-            color: '#A08C80',
+            color: '#7A665A',
             opacity: 0.4,
             marginTop: 32,
             lineHeight: 1.8,

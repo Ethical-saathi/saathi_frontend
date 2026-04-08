@@ -352,7 +352,7 @@ export default function BreathingOrb({ variant, scale = 1, emotionOverride, text
             <defs>
               <path id="circlePath" d="M 310, 310 m -280, 0 a 280,280 0 1,1 560,0 a 280,280 0 1,1 -560,0" />
             </defs>
-            <text fontFamily="'DM Sans', sans-serif" fontSize="9" fill="#A08C80" letterSpacing="4" opacity="0.3">
+            <text fontFamily="'DM Sans', sans-serif" fontSize="9" fill="#7A665A" letterSpacing="4" opacity="0.3">
               <textPath href="#circlePath" startOffset="0%">
                 listening · remembering · understanding · feeling · listening · remembering · understanding · feeling · listening · remembering · understanding · feeling ·
               </textPath>
