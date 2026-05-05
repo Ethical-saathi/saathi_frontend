@@ -40,7 +40,7 @@ const waves = [
     baseSpeed: 0.0004,
     strokeWidth: 1.5,
     harmonicStrength: 0.15,
-    noiseStrength: 0.05,
+    noiseStrength: 0.03,
   },
   {
     // Wave 2 — Undertow  
@@ -50,7 +50,7 @@ const waves = [
     baseSpeed: 0.00025,
     strokeWidth: 2,
     harmonicStrength: 0.30,
-    noiseStrength: 0.15,
+    noiseStrength: 0.08,
   },
   {
     // Wave 3 — Deep
@@ -60,7 +60,7 @@ const waves = [
     baseSpeed: 0.00015,
     strokeWidth: 1,
     harmonicStrength: 0.0,
-    noiseStrength: 0.6,
+    noiseStrength: 0.35,
   }
 ];
 
@@ -189,7 +189,11 @@ export default function EmotionWaveform() {
       const height = window.innerWidth < 768 ? 200 : 280;
       canvas.width = rect.width * dpr;
       canvas.height = height * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = true;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${height}px`;
     };
@@ -226,7 +230,7 @@ export default function EmotionWaveform() {
       let baselineY = centerY;
       const isJitter = (targetState.baselineJitter && transitionProgress > 0.5) || (prevState.baselineJitter && transitionProgress <= 0.5);
       if (isJitter && Math.random() > 0.5) {
-        baselineY += (Math.random() - 0.5) * 4;
+        baselineY += (Math.random() - 0.5) * 2;
       }
       
       const isOverwhelmed = (targetState.name === 'overwhelmed' && transitionProgress > 0.5);
@@ -270,11 +274,11 @@ export default function EmotionWaveform() {
         let yOffset = 0;
         if (isSag && waveIndex === 2) yOffset = 40; 
         
-        for (let x = 0; x <= width; x += 3) {
+          for (let x = 0; x <= width; x += 2) {
           let primary = Math.sin(x * freq + timestamp * speed * dirMultiplier);
           
           if (isJagged && waveIndex === 1) {
-             const jagged = -Math.abs(Math.sin(x * freq * 1.5 + timestamp * speed * dirMultiplier)) * 1.2;
+             const jagged = -Math.abs(Math.sin(x * freq * 1.5 + timestamp * speed * dirMultiplier)) * 0.7;
              primary = lerp2(transitionProgress, primary, jagged); 
           }
 

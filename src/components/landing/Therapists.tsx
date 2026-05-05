@@ -447,118 +447,6 @@ function HandoffChat({ isMobile, onWarmShift }: { isMobile: boolean; onWarmShift
   );
 }
 
-// ─── Floating Therapist Avatar ───────────────────────────────────────────────
-interface AvatarConfig {
-  label: string;
-  top?: string;
-  bottom?: string;
-  left?: string;
-  right?: string;
-  size: number;
-  floatDuration: number;
-  isActiveOne?: boolean;
-}
-
-function FloatingAvatar({ config, showGlow }: { config: AvatarConfig; showGlow: boolean }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <motion.div
-      animate={{ y: [0, -12, 0] }}
-      transition={{ duration: config.floatDuration, repeat: Infinity, ease: 'easeInOut' }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: 'absolute',
-        top: config.top,
-        bottom: config.bottom,
-        left: config.left,
-        right: config.right,
-        zIndex: 1,
-        cursor: 'pointer',
-      }}
-    >
-      {/* Glow ring on active avatar */}
-      <AnimatePresence>
-        {showGlow && config.isActiveOne && (
-          <motion.div
-            initial={{ scale: 1, opacity: 0.4 }}
-            animate={{ scale: 1.6, opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            style={{
-              position: 'absolute',
-              inset: -8,
-              borderRadius: '50%',
-              border: '2px solid rgba(244,132,95,0.4)',
-              pointerEvents: 'none',
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      <motion.div
-        animate={{
-          scale: hovered ? 1.08 : 1,
-          boxShadow: hovered
-            ? '0 8px 24px rgba(244,132,95,0.25)'
-            : '0 4px 12px rgba(244,132,95,0.08)',
-        }}
-        transition={{ duration: 0.25 }}
-        style={{
-          width: config.size,
-          height: config.size,
-          borderRadius: '50%',
-          background: '#FDF0E8',
-          border: '1.5px solid rgba(244,132,95,0.2)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: config.size * 0.24,
-          fontWeight: 600,
-          color: '#8B6152',
-          letterSpacing: '0.04em',
-        }}
-      >
-        {config.label}
-      </motion.div>
-
-      {/* Hover tooltip */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              position: 'absolute',
-              top: config.size + 8,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              whiteSpace: 'nowrap',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11,
-              fontWeight: 500,
-              color: '#5C4033',
-              background: 'rgba(255,250,247,0.95)',
-              backdropFilter: 'blur(12px)',
-              padding: '6px 12px',
-              borderRadius: 8,
-              border: '1px solid rgba(244,132,95,0.12)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-              zIndex: 20,
-            }}
-          >
-            Licensed Therapist · Available now
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
 // ─── Breathing Heartbeat Line ────────────────────────────────────────────────
 function BreathLine() {
   return (
@@ -583,28 +471,9 @@ export default function Therapists() {
   const isMobile = useIsMobile();
 
   const chatSectionRef = useRef<HTMLDivElement>(null);
-  const chatInView = useInView(chatSectionRef, { once: true, margin: '-15%' });
-
-  // Floating avatars config
-  const avatarConfigs: AvatarConfig[] = isMobile ? [] : [
-    { label: 'JS', top: '12%', left: '8%', size: 52, floatDuration: 3.5 },
-    { label: 'DR', top: '18%', right: '10%', size: 52, floatDuration: 4.2, isActiveOne: true },
-    { label: 'AM', bottom: '22%', left: '12%', size: 52, floatDuration: 5.0 },
-    { label: 'KT', bottom: '15%', right: '8%', size: 52, floatDuration: 3.8 },
-  ];
 
   // Background warmth shift — triggered by child HandoffChat
   const [bgWarm, setBgWarm] = useState(false);
-
-  // Show avatar glow when human enters (phase 8+)
-  const [avatarGlow, setAvatarGlow] = useState(false);
-  useEffect(() => {
-    if (!chatInView) return;
-    // Time avatar glow to match Phase 4 entry (~10.8s)
-    const dm = isMobile ? 0.8 : 1.0;
-    const timer = setTimeout(() => setAvatarGlow(true), 10800 * dm);
-    return () => clearTimeout(timer);
-  }, [chatInView, isMobile]);
 
   return (
     <>
@@ -720,11 +589,6 @@ export default function Therapists() {
             zIndex: 0,
           }}
         />
-
-        {/* Floating therapist avatars */}
-        {avatarConfigs.map((cfg, i) => (
-          <FloatingAvatar key={i} config={cfg} showGlow={avatarGlow} />
-        ))}
 
         {/* ── TOP COPY ── */}
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 10, marginBottom: isMobile ? 40 : 64 }}>

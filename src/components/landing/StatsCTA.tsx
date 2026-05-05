@@ -101,11 +101,11 @@ export default function StatsCTA() {
             Be among the first to experience an AI<br/>that truly knows you.
           </p>
 
-          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="blob-btn breathing-slow" style={{
-            display: 'inline-block', padding: isMobile ? '20px 40px' : '28px 64px', fontSize: isMobile ? 18 : 22, fontWeight: 700,
-            textDecoration: 'none', fontFamily: 'var(--font-body)', letterSpacing: 1, cursor: 'pointer'
+          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="journey-btn journey-btn--cta breathing-slow" style={{
+            display: 'inline-flex', padding: isMobile ? '20px 38px' : '26px 58px', fontSize: isMobile ? 18 : 22, fontWeight: 700,
+            textDecoration: 'none', letterSpacing: 0.6, cursor: 'pointer'
           }}>
-            Begin Your Journey →
+            Walk This Journey Together →
           </a>
           
           <div style={{ marginTop: 32, fontSize: 13, color: '#7A665A', letterSpacing: 1, textTransform: 'uppercase', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16 }}>

@@ -19,20 +19,13 @@ export function LandingNavbar() {
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
+        initial={{ y: -80 }}
         animate={{ y: 0 }}
-        transition={{ delay: 2.5, duration: 1.2, type: 'spring', stiffness: 100 }}
+        transition={{ delay: 0.9, duration: 1.1, type: 'spring', stiffness: 120 }}
+        className="nav-shell"
+        data-scrolled={scrolled ? 'true' : 'false'}
         style={{
-          position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 9991,
-          width: '90%', maxWidth: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 24px',
-          borderRadius: 40,
-          background: scrolled ? 'rgba(255,244,238,0.85)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(24px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(24px)' : 'none',
-          border: scrolled ? '1px solid rgba(244,132,95,0.08)' : '1px solid transparent',
-          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+          zIndex: 9991,
         }}
       >
         <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
@@ -55,10 +48,10 @@ export function LandingNavbar() {
               {link}
             </a>
           ))}
-          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="blob-btn" style={{
-            padding: '12px 28px', fontSize: 14, fontWeight: 500, fontFamily: 'var(--font-body)', textDecoration: 'none', cursor: 'pointer'
+          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="journey-btn" style={{
+            padding: '12px 26px', fontSize: 13, fontWeight: 600, textDecoration: 'none', cursor: 'pointer'
           }}>
-            Begin Your Journey →
+            Walk This Journey Together →
           </a>
         </div>
       </motion.nav>
@@ -103,10 +96,10 @@ export function LandingNavbar() {
                 {link}
               </a>
             ))}
-            <a onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/onboarding'); }} className="blob-btn" style={{
-              padding: '20px 48px', fontSize: 18, fontWeight: 500, fontFamily: 'var(--font-body)', textDecoration: 'none', marginTop: 32, cursor: 'pointer'
+            <a onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/onboarding'); }} className="journey-btn" style={{
+              padding: '20px 44px', fontSize: 18, fontWeight: 600, textDecoration: 'none', marginTop: 32, cursor: 'pointer'
             }}>
-              Begin Your Journey →
+              Walk This Journey Together →
             </a>
           </motion.div>
         )}

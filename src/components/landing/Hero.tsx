@@ -133,10 +133,10 @@ export default function Hero() {
           transition={{ delay: 4.4, duration: 1 }}
           style={{ display: 'flex', alignItems: 'center', gap: 32, marginTop: 56 }}
         >
-          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="blob-btn" style={{
-            padding: '24px 40px', fontSize: 18, fontWeight: 600, textDecoration: 'none', display: 'inline-block', cursor: 'pointer'
+          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="journey-btn" style={{
+            padding: '22px 36px', fontSize: 18, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', cursor: 'pointer'
           }}>
-            Begin Your Journey →
+            Walk This Journey Together →
           </a>
           
           <a href="#how-it-works" data-hover className="nav-link" style={{ 
