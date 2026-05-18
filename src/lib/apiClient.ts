@@ -1,4 +1,6 @@
-import { telemetry, DEBUG_USER_ID } from "./telemetry";
+import { telemetry } from "./telemetry";
+import { supabase } from "./supabaseClient";
+
 
 // ==========================================
 // ERROR TAXONOMY
@@ -97,12 +99,18 @@ class RESTTransportAdapter {
     }
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch(url, {
         method: options.method,
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": DEBUG_USER_ID // Future Auth Middleware injection point
-        },
+        headers,
         body: options.body ? JSON.stringify(options.body) : undefined,
         signal: controller.signal,
       });
