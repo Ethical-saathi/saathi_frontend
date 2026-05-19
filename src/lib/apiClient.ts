@@ -74,7 +74,9 @@ interface RequestOptions {
   signal?: AbortSignal;
 }
 
-const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  ? `${import.meta.env.VITE_API_BASE_URL}/api/v1` 
+  : "http://127.0.0.1:8000/api/v1";
 
 class RESTTransportAdapter {
   // We track generation_id explicitly to discard stale delayed responses
@@ -186,7 +188,8 @@ export const apiClient = {
 
   checkHealth: async (signal?: AbortSignal) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/health", { method: 'GET', signal });
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${baseUrl}/health`, { method: 'GET', signal });
       if (!response.ok) return false;
       const data = await response.json();
       return data.status === 'ok';
