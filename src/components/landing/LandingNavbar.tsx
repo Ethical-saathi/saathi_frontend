@@ -59,7 +59,7 @@ export function LandingNavbar() {
         </div>
         
         {/* Mobile Trigger (in nav) */}
-        <div className="md:hidden" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+        <div className="md:hidden flex items-center ml-auto">
           <button onClick={() => setMobileMenuOpen(true)} style={{ background: 'none', border: 'none', color: '#2D1B0E', padding: 8 }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12"></line>
