@@ -107,7 +107,7 @@ const About = () => {
             className="mt-6 text-[17px] text-slate-600 max-w-2xl mx-auto leading-relaxed"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            We're a team of therapists, engineers, and designers united by one mission — making compassionate, effective mental health support available to everyone, everywhere.
+            AI Saathi is an independent project built from Odisha, India — driven by a single belief: everyone deserves a safe, non-judgmental space to be heard.
           </p>
         </motion.div>
       </section>
@@ -272,7 +272,7 @@ const About = () => {
               className="text-[14px] text-slate-500"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              San Francisco, CA — Serving the world
+              Odisha, India — Building for the world
             </p>
           </div>
         </motion.div>
