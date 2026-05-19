@@ -6,7 +6,6 @@ import Hero from '../components/landing/Hero'
 import ProblemSolution from '../components/landing/ProblemSolution'
 import Architecture from '../components/landing/Architecture'
 import EmotionEngine from '../components/landing/EmotionEngine'
-import Therapists from '../components/landing/Therapists'
 import StatsCTA from '../components/landing/StatsCTA'
 
 export default function LandingPage() {
@@ -24,7 +23,6 @@ export default function LandingPage() {
             <ProblemSolution />
             <Architecture />
             <EmotionEngine />
-            <Therapists />
             <StatsCTA />
           </main>
         </>

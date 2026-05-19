@@ -5,44 +5,15 @@ import { ArrowLeft, Mail, MapPin, Heart, Sparkles, Star } from "lucide-react";
 const teamMembers = [
   {
     name: "Jaya Prakash Narayan Mishra",
-    role: "Founder & Clinical Director",
-    email: "sarah.chen@saathi.app",
+    role: "Founder (4th Year Undergraduate)",
+    email: "contact@saathi.app",
+    location: "Odisha, India",
     image: "",
-    bio: "Licensed psychologist with 15+ years of experience in cognitive behavioral therapy. Passionate about making mental health care accessible to everyone.",
+    bio: "Building AI Saathi to bridge the gap between technology and compassionate mental health support. Driven by a belief that everyone deserves a safe space to be heard.",
     accent: "from-rose-400 to-pink-500",
     accentLight: "from-rose-100 to-pink-50",
     iconColor: "text-rose-500",
-  },
-  {
-    name: "Aum Patro",
-    role: "Lead AI Engineer",
-    email: "alex.rivera@saathi.app",
-    image: "",
-    bio: "Former Google AI researcher specializing in natural language processing and empathetic AI systems. Building technology that truly understands human emotion.",
-    accent: "from-blue-400 to-indigo-500",
-    accentLight: "from-blue-100 to-indigo-50",
-    iconColor: "text-blue-500",
-  },
-  {
-    name: "Emily Chen",
-    role: "Freelance Designer",
-    email: "emily.chen@saathi.app",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face",
-    bio: "Award-winning UX designer focused on creating calming, intuitive digital experiences. Believes great design can be a form of therapy itself.",
-    accent: "from-violet-400 to-purple-500",
-    accentLight: "from-violet-100 to-purple-50",
-    iconColor: "text-violet-500",
-  },
-  {
-    name: "Liam Okonkwo",
-    role: "Head of Community & Wellness",
-    email: "liam.okonkwo@saathi.app",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face",
-    bio: "Certified wellness coach and community builder with a deep commitment to destigmatizing mental health conversations and fostering safe online spaces.",
-    accent: "from-rose-400 to-amber-500",
-    accentLight: "from-rose-100 to-amber-50",
-    iconColor: "text-rose-500",
-  },
+  }
 ];
 
 const values = [

@@ -11,6 +11,7 @@ import { SessionProvider } from "@/context/SessionContext";
 import LandingPage from "./pages/LandingPage.tsx";
 import Auth from "./pages/Auth.tsx";
 import About from "./pages/About.tsx";
+import HowItWorks from "./pages/HowItWorks.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ConsentFlow from "./pages/ConsentFlow.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/about" element={<About />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
 
               {/* AUTHENTICATED: Consent flow (requires login, but NOT consent/onboarding) */}
               <Route

@@ -139,8 +139,8 @@ export default function Hero() {
             Walk This Journey Together →
           </a>
           
-          <a href="#how-it-works" data-hover className="nav-link" style={{ 
-            fontSize: 16, color: '#7A665A', borderBottom: '1px solid rgba(160,140,128,0.3)', paddingBottom: 4 
+          <a onClick={(e) => { e.preventDefault(); navigate('/how-it-works'); }} data-hover className="nav-link" style={{ 
+            fontSize: 16, color: '#7A665A', borderBottom: '1px solid rgba(160,140,128,0.3)', paddingBottom: 4, cursor: 'pointer' 
           }}>
             Watch how it works ↓
           </a>
