@@ -91,7 +91,7 @@ class RESTTransportAdapter {
     return this.currentGenerationId;
   }
 
-  private async fetchWithTimeout(url: string, options: RequestOptions, timeoutMs: number = 15000): Promise<Response> {
+  private async fetchWithTimeout(url: string, options: RequestOptions, timeoutMs: number = 60000): Promise<Response> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
 
