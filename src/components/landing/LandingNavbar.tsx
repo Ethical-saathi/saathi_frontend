@@ -51,7 +51,7 @@ export function LandingNavbar() {
               {link}
             </a>
           ))}
-          <a onClick={(e) => { e.preventDefault(); navigate('/onboarding'); }} data-hover className="journey-btn" style={{
+          <a onClick={(e) => { e.preventDefault(); navigate('/auth'); }} data-hover className="journey-btn" style={{
             padding: '12px 26px', fontSize: 13, fontWeight: 600, textDecoration: 'none', cursor: 'pointer'
           }}>
             Walk This Journey Together →
@@ -100,7 +100,7 @@ export function LandingNavbar() {
                 {link}
               </a>
             ))}
-            <a onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/onboarding'); }} className="journey-btn" style={{
+            <a onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/auth'); }} className="journey-btn" style={{
               padding: '20px 44px', fontSize: 18, fontWeight: 600, textDecoration: 'none', marginTop: 32, cursor: 'pointer'
             }}>
               Walk This Journey Together →

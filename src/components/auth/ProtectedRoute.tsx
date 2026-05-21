@@ -32,10 +32,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // TEMPORARY BYPASS FOR USER TESTING
-  // if (!user) {
-  //   return <Navigate to="/auth" state={{ from: location }} replace />;
-  // }
+  if (!user) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
 
   return <>{children}</>;
 };
