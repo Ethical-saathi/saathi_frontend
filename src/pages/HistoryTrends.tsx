@@ -5,33 +5,11 @@ import { ArrowLeft, Sparkles, Flag, TrendingUp } from "lucide-react";
 import { VADTrendGraph, type VADTrendPoint } from "@/components/session/VADTrendGraph";
 
 // ── MOCK DATA ──
-const MOCK_TREND_DATA: VADTrendPoint[] = [
-  { session: "S1", valence: 0.35, arousal: 0.65, dominance: 0.30 },
-  { session: "S2", valence: 0.38, arousal: 0.60, dominance: 0.35 },
-  { session: "S3", valence: 0.42, arousal: 0.58, dominance: 0.40 },
-  { session: "S4", valence: 0.40, arousal: 0.62, dominance: 0.38 },
-  { session: "S5", valence: 0.48, arousal: 0.52, dominance: 0.45 },
-  { session: "S6", valence: 0.52, arousal: 0.48, dominance: 0.50 },
-  { session: "S7", valence: 0.55, arousal: 0.45, dominance: 0.55 },
-  { session: "S8", valence: 0.50, arousal: 0.50, dominance: 0.52 },
-  { session: "S9", valence: 0.58, arousal: 0.42, dominance: 0.58 },
-  { session: "S10", valence: 0.62, arousal: 0.40, dominance: 0.62 },
-  { session: "S11", valence: 0.65, arousal: 0.38, dominance: 0.65 },
-  { session: "S12", valence: 0.68, arousal: 0.35, dominance: 0.70 },
-];
+const MOCK_TREND_DATA: VADTrendPoint[] = [];
 
-const MOCK_NOTICES = [
-  "You mention \"work stress\" in 7 of 12 sessions",
-  "Your energy spikes every Monday morning",
-  "Sessions about family show 30% higher sense of control",
-  "Your mood has improved 89% since Session 1",
-];
+const MOCK_NOTICES: string[] = [];
 
-const MOCK_MILESTONES = [
-  { session: 3, text: "First breakthrough: Identified anxiety triggers" },
-  { session: 7, text: "Mid-program check-in: Mood improvement noted" },
-  { session: 12, text: "Final session: Reflection on 3-month growth" },
-];
+const MOCK_MILESTONES: { session: number; text: string }[] = [];
 
 const HistoryTrends = () => {
   const navigate = useNavigate();
