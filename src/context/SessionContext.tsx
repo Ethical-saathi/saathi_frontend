@@ -104,13 +104,13 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const persisted = loadPersistedSession();
 
   const [sessionNumber, setSessionNumber] = useState(
-    persisted?.sessionNumber ?? 5
+    persisted?.sessionNumber ?? 1
   );
   const [sessionVersion, setSessionVersion] = useState(0);
   const [sessionsUsedThisWeek, setSessionsUsedThisWeek] = useState(
-    persisted?.sessionsUsedThisWeek ?? 1
+    persisted?.sessionsUsedThisWeek ?? 0
   );
-  const [weeksElapsed] = useState(3);
+  const [weeksElapsed] = useState(1);
 
   const [sessionGoal, setSessionGoal] = useState(persisted?.goal ?? "");
   const [sessionMood, setSessionMood] = useState<SessionMood | null>(

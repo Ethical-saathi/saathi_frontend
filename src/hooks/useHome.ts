@@ -17,12 +17,7 @@ export interface HomeData {
   sessionCount: number;
 }
 
-// Reusing mock history from useChat for consistency in the Sidebar
-const MOCK_HISTORY: SessionHistoryItem[] = [
-  { id: "2", date: "Mar 16", summary: "Feeling stuck at work", isActive: false },
-  { id: "3", date: "Mar 12", summary: "Anxiety about the presentation", isActive: false },
-  { id: "4", date: "Feb 28", summary: "Reflecting on boundaries", isActive: false }
-];
+const MOCK_HISTORY: SessionHistoryItem[] = [];
 
 export const useHome = (sessionId: string) => {
   const { user, userProfile } = useAuth();
@@ -42,15 +37,10 @@ export const useHome = (sessionId: string) => {
     const timer = setTimeout(() => {
       setHomeData({
         userName,
-        contextLine: "Last time you talked about feeling overwhelmed at work. That was 3 days ago.",
-        lastSession: {
-          date: "March 16",
-          summary: "You talked about work pressure and feeling like you're falling behind. Toward the end you mentioned wanting to take a small break this weekend.",
-          openingMood: "mild_stress",
-          closingMood: "calm"
-        },
-        insight: "You tend to feel lighter toward the end of your sessions.",
-        sessionCount: 4
+        contextLine: "Welcome to your safe space. I am here whenever you're ready.",
+        lastSession: null,
+        insight: null,
+        sessionCount: 0
       });
       setIsLoading(false);
     }, 800);
