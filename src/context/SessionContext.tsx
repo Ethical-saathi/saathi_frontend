@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useCallback, type ReactNode } from "react";
-
+import { useAuth } from "@/components/auth/AuthProvider";
 // ── CONSTANTS (MVP: fixed values, configurable later) ──
 const TOTAL_SESSIONS = 24;
 const TOTAL_WEEKS = 12;
@@ -132,6 +132,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const sessionsRemaining = SESSIONS_PER_WEEK - sessionsUsedThisWeek;
   const daysUntilReset = calculateDaysUntilMonday();
 
+  const { user } = useAuth();
+  
   // Persist active session state to localStorage whenever it changes
   useEffect(() => {
     if (isSessionActive && activeSessionId && sessionStartTime) {
@@ -155,11 +157,13 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   ]);
 
   const startSession = useCallback(async (goal: string, initialMood: string) => {
+    if (!user) throw new Error("No authenticated user");
+
     // 1. Call API to authoritative creation
     const { apiClient } = await import("@/lib/apiClient");
     
     try {
-      const response = await apiClient.createSession(goal, initialMood);
+      const response = await apiClient.createSession(user.id, goal, initialMood);
       
       const id = response.session_id;
       setIsSessionActive(true);

@@ -198,9 +198,9 @@ export const apiClient = {
     }
   },
 
-  createSession: async (goal: string, initialMood: string, signal?: AbortSignal): Promise<SessionResponse> => {
+  createSession: async (userId: string, goal: string, initialMood: string, signal?: AbortSignal): Promise<SessionResponse> => {
     const payload: SessionCreateRequest = { 
-      user_id: DEBUG_USER_ID,
+      user_id: userId,
       intention: goal, 
       mood: initialMood 
     };
