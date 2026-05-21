@@ -124,10 +124,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     persisted?.sessionId ?? null
   );
 
-  const [lastSessionSummary] = useState<string | null>(
-    "You talked about work pressure and feeling like you're falling behind. Toward the end you mentioned wanting to take a small break this weekend."
-  );
-  const [lastSessionDate] = useState<string | null>("March 16");
+  const [lastSessionSummary] = useState<string | null>(null);
+  const [lastSessionDate] = useState<string | null>(null);
 
   const sessionsRemaining = SESSIONS_PER_WEEK - sessionsUsedThisWeek;
   const daysUntilReset = calculateDaysUntilMonday();
