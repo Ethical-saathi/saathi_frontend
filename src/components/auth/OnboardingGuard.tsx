@@ -23,10 +23,9 @@ export const OnboardingGuard = ({ children }: OnboardingGuardProps) => {
     );
   }
 
-  // TEMPORARY BYPASS FOR USER TESTING
-  // if (!hasCompletedOnboarding) {
-  //   return <Navigate to="/onboarding" replace />;
-  // }
+  if (!hasCompletedOnboarding) {
+    return <Navigate to="/onboarding" replace />;
+  }
 
   return <>{children}</>;
 };

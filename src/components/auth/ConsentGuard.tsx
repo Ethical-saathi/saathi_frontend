@@ -23,10 +23,9 @@ export const ConsentGuard = ({ children }: ConsentGuardProps) => {
     );
   }
 
-  // TEMPORARY BYPASS FOR USER TESTING
-  // if (!hasCompletedConsent) {
-  //   return <Navigate to="/consent" replace />;
-  // }
+  if (!hasCompletedConsent) {
+    return <Navigate to="/consent" replace />;
+  }
 
   return <>{children}</>;
 };
