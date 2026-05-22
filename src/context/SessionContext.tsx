@@ -169,14 +169,14 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       setSessionStartTime(Date.now());
       setSessionNumber((prev) => prev + 1);
       setSessionsUsedThisWeek((prev) => prev + 1);
-      setSessionVersion(response.session_version);
+      setSessionVersion(response.session_version ?? 0);
       
       return id;
     } catch (err) {
       console.error("Failed to start canonical session", err);
       throw err;
     }
-  }, []);
+  }, [user]);
 
   const endSession = useCallback(() => {
     setIsSessionActive(false);
