@@ -46,7 +46,7 @@ export interface SessionHistoryItem {
   isActive: boolean;
 }
 
-export const useChat = () => {
+export const useChat = (providedSessionId?: string | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [unsentMessageQueue, setUnsentMessageQueue] = useState<ChatMessage[]>([]);
   const [runtimeState, setRuntimeState] = useState<SessionRuntimeState>(SessionRuntimeState.IDLE);
@@ -69,7 +69,7 @@ export const useChat = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as any;
-  const sessionId = state?.sessionId;
+  const sessionId = providedSessionId || state?.sessionId;
 
   const resetIdleTimer = useCallback(() => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
@@ -80,10 +80,15 @@ export const useChat = () => {
   }, []);
 
   const fetchCanonicalHistory = useCallback(async () => {
-    if (!sessionId) return;
+    if (!sessionId) return false;
     try {
       setRuntimeState(SessionRuntimeState.RESYNC_REQUIRED);
       const history = await apiClient.fetchHistory(sessionId);
+      
+      if (!history || history.length === 0) {
+        setRuntimeState(SessionRuntimeState.IDLE);
+        return false;
+      }
       
       const canonicalMessages: ChatMessage[] = [];
       history.forEach((turn: HistoryTurn) => {
@@ -113,10 +118,12 @@ export const useChat = () => {
       if (unsentMessageQueue.length > 0) {
         // Future: trigger replay logic
       }
+      return true;
 
     } catch (err) {
       telemetry.error({ event: "version_mismatch", error: "Failed to resync history" });
       setRuntimeState(SessionRuntimeState.RECONNECTING);
+      return false;
     }
   }, [sessionId, unsentMessageQueue]);
 
@@ -127,31 +134,39 @@ export const useChat = () => {
     // Increment generation ID on fresh mount/sync
     apiClient.incrementGeneration();
     
-    // For now, if no messages, we just append an optimistic opening.
-    // In full production, we would fetch /history first to see if it's an existing session.
-    if (messages.length === 0) {
-      const userName = state?.userName || "Friend";
-      const mood = state?.mood || "okay";
-      const intention = state?.intention || "";
-      const isReturningUser = state?.isReturningUser || false;
-
-      let firstMessageText = `Hi ${userName}. I've got your space ready. I noticed you're feeling ${mood.toLowerCase()} right now. How would you like to begin?`;
-      if (intention) {
-        firstMessageText = `Hi ${userName}. I see you want to work on "${intention.trim()}" today. I'm here to explore that with you — take your time, and start wherever feels right.`;
-      } else if (isReturningUser) {
-        firstMessageText = `Welcome back, ${userName}. How are things feeling today?`;
+    const initSession = async () => {
+      let hasHistory = false;
+      if (sessionId) {
+        hasHistory = await fetchCanonicalHistory();
       }
 
-      setMessages([{
-        id: crypto.randomUUID(),
-        sender: "saathi",
-        text: firstMessageText,
-        timestamp: new Date(),
-        origin: "CANONICAL",
-        delivery_state: "CONFIRMED",
-        streaming_state: "COMPLETE"
-      }]);
-    }
+      // If no messages exist after fetch attempt, create an optimistic opening
+      if (!hasHistory && messages.length === 0) {
+        const userName = state?.userName || "Friend";
+        const mood = state?.mood || "okay";
+        const intention = state?.intention || "";
+        const isReturningUser = state?.isReturningUser || false;
+
+        let firstMessageText = `Hi ${userName}. I've got your space ready. I noticed you're feeling ${mood.toLowerCase()} right now. How would you like to begin?`;
+        if (intention) {
+          firstMessageText = `Hi ${userName}. I see you want to work on "${intention.trim()}" today. I'm here to explore that with you — take your time, and start wherever feels right.`;
+        } else if (isReturningUser) {
+          firstMessageText = `Welcome back, ${userName}. How are things feeling today?`;
+        }
+
+        setMessages([{
+          id: crypto.randomUUID(),
+          sender: "saathi",
+          text: firstMessageText,
+          timestamp: new Date(),
+          origin: "CANONICAL",
+          delivery_state: "CONFIRMED",
+          streaming_state: "COMPLETE"
+        }]);
+      }
+    };
+
+    initSession();
     
     resetIdleTimer();
     return () => {
