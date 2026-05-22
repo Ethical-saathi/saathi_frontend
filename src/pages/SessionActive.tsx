@@ -10,8 +10,8 @@ const SessionActive = () => {
   const location = useLocation();
   const state = location.state as any;
 
-  const chatState = useChat();
   const { sessionGoal, sessionStartTime, activeSessionId, endSession } = useSession();
+  const chatState = useChat(activeSessionId);
 
   // Track whether we already triggered crisis routing to prevent double-fire
   const crisisTriggeredRef = useRef(false);
