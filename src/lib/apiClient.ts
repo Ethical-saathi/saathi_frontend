@@ -287,5 +287,14 @@ export const apiClient = {
       retry: false
     });
     return data;
+  },
+
+  fetchTranscript: async (sessionId: string, signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>(`/therapy/session/${sessionId}/transcript`, {
+      method: 'GET',
+      signal,
+      retry: false
+    });
+    return data;
   }
 };

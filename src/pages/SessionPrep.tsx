@@ -17,11 +17,6 @@ const SessionPrep = () => {
   const navigate = useNavigate();
   const { user, userProfile } = useAuth();
   const {
-    sessionNumber,
-    totalSessions,
-    weeksElapsed,
-    totalWeeks,
-    sessionsRemaining,
     lastSessionSummary,
     lastSessionDate,
     setSessionGoal,
@@ -68,40 +63,10 @@ const SessionPrep = () => {
     }
   };
 
-  // Redirect if no sessions remaining
-  if (sessionsRemaining <= 0) {
-    navigate("/home", { replace: true });
-    return null;
-  }
 
   return (
     <div className="flex-1 overflow-y-auto w-full pb-20">
       <div className="max-w-xl mx-auto px-6 md:px-12 py-10 md:py-16">
-        {/* Session Counter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex items-center gap-4 mb-3"
-        >
-          <div
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium"
-            style={{
-              background: "var(--saathi-coral-muted)",
-              color: "var(--saathi-coral)",
-            }}
-          >
-            <Target size={13} />
-            Session {sessionNumber} of {totalSessions}
-          </div>
-          <span
-            className="text-[12px]"
-            style={{ color: "var(--saathi-text-soft)" }}
-          >
-            <Clock size={12} className="inline mr-1" style={{ marginTop: -2 }} />
-            Week {weeksElapsed} of {totalWeeks}
-          </span>
-        </motion.div>
 
         {/* Greeting */}
         <motion.div

@@ -306,7 +306,7 @@ const SessionSummary = () => {
           </button>
           <button
             onClick={() =>
-              navigate(`/history/${sessionId || "session_103"}`)
+              navigate(`/history/session/${sessionId}`)
             }
             className="saathi-btn-outline w-full flex items-center justify-center gap-2"
           >

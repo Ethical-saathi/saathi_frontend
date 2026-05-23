@@ -143,8 +143,8 @@ const Home = () => {
           </div>
         </motion.div>
 
-        {/* Session Budget Widget */}
-        <SessionBudgetWidget />
+        {/* Session Metrics Widget */}
+        <SessionBudgetWidget sessionCount={homeData?.sessionCount || 0} />
 
         {/* Last Session Card */}
         {homeData?.lastSession && (

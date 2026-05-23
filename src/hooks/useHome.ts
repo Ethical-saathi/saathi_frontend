@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { SessionHistoryItem } from "./useChat";
+import { apiClient } from "@/lib/apiClient";
 
 export type MoodType = 'Struggling' | 'Anxious' | 'Okay' | 'Alright' | 'Good';
 
@@ -17,53 +17,81 @@ export interface HomeData {
   sessionCount: number;
 }
 
-const MOCK_HISTORY: SessionHistoryItem[] = [];
-
 export const useHome = (sessionId: string) => {
   const { user, userProfile } = useAuth();
   const [homeData, setHomeData] = useState<HomeData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Derive user's display name from auth context
-  const userName = userProfile?.first_name
-    || user?.user_metadata?.full_name
-    || user?.user_metadata?.name
-    || user?.email?.split("@")[0]
-    || "there";
+  // STRICT PREFERRED NAME EXTRACTION
+  const userName = userProfile?.preferred_name
+    || userProfile?.first_name
+    || user?.user_metadata?.given_name
+    || (user?.user_metadata?.full_name ? user.user_metadata.full_name.split(" ")[0] : null)
+    || "Friend";
 
   useEffect(() => {
-    // MOCK: GET /api/home?sessionId=xxx
-    // TODO: Replace with real Supabase query when session tables are integrated
-    const timer = setTimeout(() => {
+    let isMounted = true;
+    
+    Promise.all([
+      apiClient.fetchSessions(),
+      apiClient.fetchTrends()
+    ]).then(([sessionsData, trendsData]) => {
+      if (!isMounted) return;
+      
+      const sessions = sessionsData?.sessions || [];
+      const sessionCount = sessions.length; // Canonical DB Count
+      
+      let lastSession = null;
+      if (sessions.length > 0) {
+        const last = sessions[0];
+        const dateStr = new Date(last.created_at).toLocaleDateString("en-IN", {
+          month: "short", day: "numeric"
+        });
+        
+        lastSession = {
+          date: dateStr,
+          summary: last.summary_text || "A session focused on reflection and understanding.",
+          openingMood: last.mood_start || "neutral",
+          closingMood: "calm"
+        };
+      }
+      
+      const notices = trendsData?.notices || [];
+      const insight = notices.length > 0 ? notices[0] : null;
+
       setHomeData({
         userName,
         contextLine: "Welcome to your safe space. I am here whenever you're ready.",
-        lastSession: null,
-        insight: null,
-        sessionCount: 0
+        lastSession,
+        insight,
+        sessionCount
       });
       setIsLoading(false);
-    }, 800);
+    }).catch(err => {
+      console.error("Failed to load home data", err);
+      if (isMounted) {
+        setHomeData({
+          userName,
+          contextLine: "Welcome to your safe space. I am here whenever you're ready.",
+          lastSession: null,
+          insight: null,
+          sessionCount: 0
+        });
+        setIsLoading(false);
+      }
+    });
 
-    return () => clearTimeout(timer);
+    return () => { isMounted = false; };
   }, [sessionId, userName]);
 
-  // Update userName in homeData if it changes (e.g., profile loaded after initial render)
-  useEffect(() => {
-    if (homeData && homeData.userName !== userName) {
-      setHomeData(prev => prev ? { ...prev, userName } : prev);
-    }
-  }, [userName, homeData]);
-
   const submitMoodCheckin = useCallback((mood: MoodType) => {
-    // MOCK: POST /api/home/mood-checkin
-    console.log("POST /api/home/mood-checkin", { sessionId, mood });
-  }, [sessionId]);
+    localStorage.setItem("saathi_pre_session_mood", mood);
+  }, []);
 
   return {
     homeData,
     isLoading,
     submitMoodCheckin,
-    sessionHistory: MOCK_HISTORY
+    sessionHistory: []
   };
 };

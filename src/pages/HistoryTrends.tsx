@@ -178,7 +178,7 @@ const HistoryTrends = () => {
                 <button
                   key={i}
                   onClick={() =>
-                    navigate(`/history/${milestone.session_id}`)
+                    navigate(`/history/session/${milestone.session_id}`)
                   }
                   className="flex items-start gap-4 text-left group transition-colors"
                 >

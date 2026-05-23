@@ -1,14 +1,28 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useSessionHistory } from "@/hooks/useSessionHistory";
+import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
-import { MoodDotArc } from "@/components/ui/MoodDotArc";
+import { apiClient } from "@/lib/apiClient";
 
 const SessionTranscript = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
-  const { data, isLoading } = useSessionHistory(sessionId);
+  const [data, setData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (isLoading || !data) {
+  useEffect(() => {
+    if (!sessionId) return;
+    apiClient.fetchTranscript(sessionId)
+      .then(res => {
+        setData(res);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load transcript:", err);
+        setIsLoading(false);
+      });
+  }, [sessionId]);
+
+  if (isLoading) {
     return (
       <div className="flex-1 overflow-y-auto px-6 md:px-12 py-16">
         <div className="max-w-2xl mx-auto">
@@ -22,14 +36,28 @@ const SessionTranscript = () => {
     );
   }
 
-  const session = data.sessions.find((s) => s.id === sessionId);
-  if (!session) {
+  if (!data) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <p style={{ color: "var(--saathi-text-soft)" }}>Session not found.</p>
+      <div className="flex-1 flex flex-col items-center justify-center py-20">
+        <p className="mb-4" style={{ color: "var(--saathi-text-soft)" }}>Session transcript not found or access denied.</p>
+        <button
+          onClick={() => navigate("/history")}
+          className="px-4 py-2 rounded-full text-[13px] border hover:bg-black/5"
+          style={{ borderColor: "var(--saathi-border)", color: "var(--saathi-text-mid)" }}
+        >
+          Return to History
+        </button>
       </div>
     );
   }
+
+  const { metadata, summary, turns, created_at } = data;
+  const dateStr = new Date(created_at).toLocaleDateString("en-IN", {
+    weekday: "short",
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
 
   return (
     <div className="flex-1 overflow-y-auto w-full pb-20">
@@ -46,99 +74,57 @@ const SessionTranscript = () => {
         {/* Header */}
         <div className="mb-10">
           <p className="text-[12px] uppercase tracking-wider mb-2" style={{ color: "var(--saathi-text-soft)" }}>
-            {session.date}
+            {dateStr}
           </p>
           <h1 className="text-[24px] font-medium mb-4" style={{ color: "var(--saathi-text-dark)" }}>
-            {session.title}
+            Session Reflection
           </h1>
-          <div className="inline-block">
-            <MoodDotArc openingMood={session.openingMood} closingMood={session.closingMood} />
-          </div>
+          {summary.text && (
+            <p className="text-[14px] leading-relaxed italic p-4 rounded-xl" style={{ background: "rgba(245,237,216,0.3)", color: "var(--saathi-text-mid)" }}>
+              {summary.text}
+            </p>
+          )}
         </div>
 
         {/* Transcript */}
         <div className="flex flex-col gap-4">
-          {session.transcript.map((msg, i) => (
-            <div key={i}>
-              <div
-                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className="max-w-[80%] rounded-2xl px-5 py-3"
-                  style={{
-                    background:
-                      msg.sender === "saathi"
-                        ? "var(--saathi-bg-card)"
-                        : "var(--saathi-coral)",
-                    color:
-                      msg.sender === "saathi"
-                        ? "var(--saathi-text-dark)"
-                        : "#FFFFFF",
-                    border:
-                      msg.sender === "saathi"
-                        ? "1px solid var(--saathi-border)"
-                        : "none",
-                  }}
-                >
-                  {msg.sender === "saathi" && (
-                    <p
-                      className="text-[11px] font-medium uppercase tracking-wider mb-1"
-                      style={{ color: "var(--saathi-text-soft)" }}
-                    >
+          {turns.map((turn: any) => (
+            <div key={turn.turn_index} className="flex flex-col gap-4 mb-2">
+              {/* User Bubble */}
+              {turn.user_message && (
+                <div className="flex justify-end">
+                  <div
+                    className="max-w-[80%] rounded-2xl px-5 py-3"
+                    style={{ background: "var(--saathi-coral)", color: "#FFFFFF" }}
+                  >
+                    <p className="text-[15px] leading-[1.7] whitespace-pre-wrap">
+                      {turn.user_message}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Saathi Bubble */}
+              {turn.assistant_response && (
+                <div className="flex justify-start">
+                  <div
+                    className="max-w-[80%] rounded-2xl px-5 py-3"
+                    style={{ background: "var(--saathi-bg-card)", border: "1px solid var(--saathi-border)", color: "var(--saathi-text-dark)" }}
+                  >
+                    <p className="text-[11px] font-medium uppercase tracking-wider mb-1" style={{ color: "var(--saathi-text-soft)" }}>
                       Saathi
                     </p>
-                  )}
-                  <p className="text-[15px] leading-[1.7] whitespace-pre-wrap">
-                    {msg.text}
-                  </p>
-                  {msg.timestamp && (
-                    <p
-                      className="text-[11px] mt-1 opacity-60"
-                      style={{
-                        color: msg.sender === "saathi" ? "var(--saathi-text-soft)" : "rgba(255,255,255,0.7)",
-                      }}
-                    >
-                      {new Date(msg.timestamp).toLocaleTimeString("en-IN", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    <p className="text-[15px] leading-[1.7] whitespace-pre-wrap">
+                      {turn.assistant_response}
                     </p>
-                  )}
-                </div>
-              </div>
-
-              {msg.hasBreakAfter && (
-                <div className="flex items-center gap-3 py-4">
-                  <div className="flex-1 h-px" style={{ background: "var(--saathi-border)" }} />
-                  <span className="text-[11px] italic" style={{ color: "var(--saathi-text-soft)" }}>
-                    pause
-                  </span>
-                  <div className="flex-1 h-px" style={{ background: "var(--saathi-border)" }} />
+                  </div>
                 </div>
               )}
             </div>
           ))}
-        </div>
-
-        {/* Footer Rating */}
-        <div className="mt-12 text-center">
-          <p className="text-[14px] mb-4" style={{ color: "var(--saathi-text-mid)" }}>
-            How did this session feel?
-          </p>
-          <div className="flex justify-center gap-4">
-            {["😟", "😕", "😐", "🙂", "😊"].map((emoji, i) => (
-              <button
-                key={i}
-                className="w-12 h-12 rounded-full flex items-center justify-center text-[20px] transition-all duration-200 hover:scale-110"
-                style={{
-                  border: "1.5px solid var(--saathi-border)",
-                  background: "var(--saathi-bg-card)",
-                }}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
+          {turns.length === 0 && (
+            <p className="text-center italic text-gray-400 py-10">No messages recorded for this session.</p>
+          )}
         </div>
       </div>
     </div>

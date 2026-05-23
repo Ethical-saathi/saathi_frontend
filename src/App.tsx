@@ -121,7 +121,7 @@ const App = () => (
                 {/* History */}
                 <Route path="/history" element={<SessionHistory />} />
                 <Route path="/history/trends" element={<HistoryTrends />} />
-                <Route path="/history/:sessionId" element={<SessionTranscript />} />
+                <Route path="/history/session/:sessionId" element={<SessionTranscript />} />
 
                 <Route path="/help" element={<Help />} />
                 <Route path="/settings" element={<Settings />} />
