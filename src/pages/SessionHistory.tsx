@@ -28,7 +28,7 @@ const SessionHistory = () => {
           sessions={data.sessions}
           totalCount={data.totalCount}
           firstSessionMonth={data.firstSessionMonth}
-          onSelectSession={(id) => navigate(`/history/${id}`)}
+          onSelectSession={(id) => navigate(`/history/session/${id}`)}
           onDeleteSession={deleteSession}
         />
       </div>

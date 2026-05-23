@@ -38,8 +38,11 @@ const SessionTranscript = () => {
 
   if (!data) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center py-20">
-        <p className="mb-4" style={{ color: "var(--saathi-text-soft)" }}>Session transcript not found or access denied.</p>
+      <div className="flex-1 flex flex-col items-center justify-center py-20 px-6 text-center">
+        <p className="mb-4 text-[15px]" style={{ color: "var(--saathi-text-mid)" }}>
+          Unable to load this session.<br />
+          This session may not exist or you may not have permission to access it.
+        </p>
         <button
           onClick={() => navigate("/history")}
           className="px-4 py-2 rounded-full text-[13px] border hover:bg-black/5"
