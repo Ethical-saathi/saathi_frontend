@@ -72,6 +72,7 @@ interface RequestOptions {
   method: string;
   body?: any;
   signal?: AbortSignal;
+  retry?: boolean;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
@@ -165,7 +166,7 @@ class RESTTransportAdapter {
 
     } catch (error: any) {
       if (error instanceof TimeoutError || error instanceof NetworkDisconnectError || error instanceof BackendFailureError) {
-        if (retryCount < MAX_RETRIES && !options.signal?.aborted) {
+        if (options.retry !== false && retryCount < MAX_RETRIES && !options.signal?.aborted) {
           telemetry.warn({ event: "transport_failure", error: error.name, retry_attempt: retryCount + 1 });
           // Exponential backoff
           await new Promise(res => setTimeout(res, 1000 * Math.pow(2, retryCount)));
@@ -273,7 +274,8 @@ export const apiClient = {
   fetchTrends: async (signal?: AbortSignal): Promise<any> => {
     const { data } = await transport.request<any>('/therapy/session/user/trends', {
       method: 'GET',
-      signal
+      signal,
+      retry: false
     });
     return data;
   },
@@ -281,7 +283,8 @@ export const apiClient = {
   fetchSessions: async (signal?: AbortSignal): Promise<any> => {
     const { data } = await transport.request<any>('/therapy/session/all', {
       method: 'GET',
-      signal
+      signal,
+      retry: false
     });
     return data;
   }
