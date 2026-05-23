@@ -296,5 +296,39 @@ export const apiClient = {
       retry: false
     });
     return data;
+  },
+
+  getUserPreferences: async (signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/user/preferences', {
+      method: 'GET',
+      signal
+    });
+    return data;
+  },
+
+  updateUserPreferences: async (updates: any, signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/user/preferences', {
+      method: 'PATCH',
+      body: updates,
+      signal
+    });
+    return data;
+  },
+
+  exportUserData: async (signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/user/export-data', {
+      method: 'POST',
+      signal
+    });
+    return data;
+  },
+
+  deleteUserData: async (payload: any, signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/user/delete-all-data', {
+      method: 'DELETE',
+      body: payload,
+      signal
+    });
+    return data;
   }
 };

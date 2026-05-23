@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { useProfileSettings } from "@/hooks/useProfileSettings";
-import { useConsent } from "@/hooks/useConsent";
 import { Toggle } from "@/components/ui/Toggle";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTheme, setTheme, CHAT_THEMES } from "@/hooks/useTheme";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const TONE_OPTIONS = ["Warm & gentle", "Direct & practical", "Calm & minimal"];
+const TONE_OPTIONS = [
+  { id: "warm_gentle", label: "Warm & gentle" },
+  { id: "direct_practical", label: "Direct & practical" },
+  { id: "calm_minimal", label: "Calm & minimal" }
+];
 
 export const Settings = () => {
   const navigate = useNavigate();
@@ -21,7 +24,6 @@ export const Settings = () => {
     deleteAllData,
     signOut,
   } = useProfileSettings();
-  const { consent, toggleLayer2 } = useConsent();
   const currentTheme = useTheme();
 
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -29,11 +31,14 @@ export const Settings = () => {
   const [currentPass, setCurrentPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmNewPass, setConfirmNewPass] = useState("");
+  
+  const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
+  
   const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [pwdMsg, setPwdMsg] = useState("");
-  const [selectedTone, setSelectedTone] = useState("Warm & gentle");
 
   const handleEdit = (field: string, initialValue = "") => {
     setEditingField(field);
@@ -41,22 +46,37 @@ export const Settings = () => {
     if (field === "password") {
       setCurrentPass(""); setNewPass(""); setConfirmNewPass(""); setPwdMsg("");
     }
-    if (field === "delete") { setDeleteConfirm(""); setDeleteError(""); }
+    if (field === "delete") { setDeleteConfirm(""); setDeletePassword(""); setDeleteError(""); }
   };
 
   const cancelEdit = () => setEditingField(null);
 
   const handleSaveName = async () => { await updateName(tempName); cancelEdit(); };
+  
   const handleSavePassword = async () => {
     if (newPass !== confirmNewPass) return;
     try { await updatePassword(currentPass, newPass); setPwdMsg("Password updated."); setTimeout(cancelEdit, 2000); }
     catch { setPwdMsg("Error updating password."); }
   };
-  const handleExport = async () => { const res = await exportData(); setExportMessage(res.message); };
+  
+  const handleExport = async () => { 
+    if (isExporting) return;
+    setIsExporting(true);
+    setExportMessage("Generating export...");
+    const res = await exportData(); 
+    setExportMessage(res.message); 
+    setIsExporting(false);
+  };
+  
   const handleDeleteAll = async () => {
     if (deleteConfirm !== "DELETE") { setDeleteError("Please type DELETE to confirm."); return; }
-    try { await deleteAllData(); await signOut(); navigate("/"); }
-    catch { setDeleteError("Something went wrong."); }
+    if (!deletePassword) { setDeleteError("Password is required."); return; }
+    try { 
+      await deleteAllData(deletePassword); 
+      await signOut(); 
+      navigate("/"); 
+    }
+    catch (e: any) { setDeleteError(e.message || "Failed to delete account. Check your password."); }
   };
 
   if (isLoading || !data) {
@@ -178,18 +198,18 @@ export const Settings = () => {
 
         <Section title="Communication Style">
           <div className="p-4">
-            <p className="text-[13px] mb-4" style={{ color: "var(--saathi-text-mid)" }}>How should Saathi talk with you?</p>
+            <p className="text-[13px] mb-4" style={{ color: "var(--saathi-text-mid)" }}>How should Saathi talk with you in future sessions?</p>
             <div className="flex flex-wrap gap-2">
               {TONE_OPTIONS.map(tone => (
-                <button key={tone}
-                  onClick={() => setSelectedTone(tone)}
+                <button key={tone.id}
+                  onClick={() => updateSetting("communicationStyle", tone.id)}
                   className="text-[13px] font-medium px-4 py-2 rounded-full transition-all duration-200"
                   style={{
-                    background: selectedTone === tone ? "var(--saathi-coral)" : "transparent",
-                    color: selectedTone === tone ? "#fff" : "var(--saathi-text-mid)",
-                    border: `1.5px solid ${selectedTone === tone ? "var(--saathi-coral)" : "var(--saathi-border)"}`,
+                    background: data.settings.communicationStyle === tone.id ? "var(--saathi-coral)" : "transparent",
+                    color: data.settings.communicationStyle === tone.id ? "#fff" : "var(--saathi-text-mid)",
+                    border: `1.5px solid ${data.settings.communicationStyle === tone.id ? "var(--saathi-coral)" : "var(--saathi-border)"}`,
                   }}
-                >{tone}</button>
+                >{tone.label}</button>
               ))}
             </div>
           </div>
@@ -197,30 +217,44 @@ export const Settings = () => {
 
         <Section title="Privacy & Data">
           <Row label="AI training consent">
-            <Toggle checked={consent?.layer2_agreed ?? false} onChange={() => toggleLayer2()} />
+            <Toggle checked={data.settings.allowAiTraining} onChange={(v) => updateSetting("allowAiTraining", v)} />
           </Row>
           <Row label="Download my data">
             {exportMessage ? (
               <span className="text-[13px] italic" style={{ color: "var(--saathi-coral)" }}>{exportMessage}</span>
             ) : (
-              <button onClick={handleExport} className="text-[13px]" style={{ color: "var(--saathi-text-mid)" }}>Request download</button>
+              <button 
+                onClick={handleExport} 
+                disabled={isExporting}
+                className="text-[13px] disabled:opacity-50" 
+                style={{ color: "var(--saathi-text-mid)" }}
+              >
+                {isExporting ? "Generating..." : "Request download"}
+              </button>
             )}
           </Row>
           <Row label="Delete all my data">
             {editingField === "delete" ? (
-              <div className="w-full mt-2">
-                <p className="text-[13px] mb-3 text-left" style={{ color: "var(--saathi-text-mid)" }}>
+              <div className="w-full mt-2 flex flex-col items-end gap-3">
+                <p className="text-[13px] text-right" style={{ color: "var(--saathi-text-mid)" }}>
                   Type <strong>DELETE</strong> to permanently delete all your data.
                 </p>
                 <input type="text" value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)}
-                  placeholder="Type DELETE" className="saathi-input mb-3 text-[14px]" />
-                <div className="flex justify-end gap-3">
+                  placeholder="Type DELETE" className="saathi-input max-w-[260px] text-[14px]" />
+                  
+                <p className="text-[13px] mt-2 text-right" style={{ color: "var(--saathi-text-mid)" }}>
+                  Enter your password to authorize:
+                </p>
+                <input type="password" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="Your password" className="saathi-input max-w-[260px] text-[14px]" />
+                  
+                <div className="flex justify-end gap-3 mt-2">
                   <button onClick={cancelEdit} className="text-[13px]" style={{ color: "var(--saathi-text-soft)" }}>Cancel</button>
                   <button onClick={handleDeleteAll}
                     className="text-[13px] font-medium px-4 py-2 rounded-xl text-white"
                     style={{ background: "var(--saathi-crisis)" }}>Delete everything</button>
                 </div>
-                {deleteError && <p className="text-[12px] mt-2" style={{ color: "var(--saathi-crisis)" }}>{deleteError}</p>}
+                {deleteError && <p className="text-[12px] mt-2 text-right" style={{ color: "var(--saathi-crisis)" }}>{deleteError}</p>}
               </div>
             ) : (
               <button onClick={() => handleEdit("delete")} className="text-[13px]" style={{ color: "var(--saathi-crisis)" }}>Delete account</button>
