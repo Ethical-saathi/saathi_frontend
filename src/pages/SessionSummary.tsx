@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { CheckCircle2, Lightbulb, BookOpen, Home, ArrowRight } from "lucide-react";
+import { VADMiniChart } from "@/components/session/VADMiniChart";
 import { apiClient } from "@/lib/apiClient";
 
 const SessionSummary = () => {
