@@ -49,6 +49,16 @@ export interface SessionHistoryItem {
 export const useChat = (providedSessionId?: string | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [unsentMessageQueue, setUnsentMessageQueue] = useState<ChatMessage[]>([]);
+  
+  const removeFromUnsentQueue = useCallback((msgId: string) => {
+    setUnsentMessageQueue(prev => {
+      const remaining = prev.filter(m => m.id !== msgId);
+      if (prev.length !== remaining.length) {
+        console.debug("[QUEUE_CLEANUP]", { removedMessageId: msgId, remainingQueue: remaining.map(m => m.id) });
+      }
+      return remaining;
+    });
+  }, []);
   const [runtimeState, setRuntimeState] = useState<SessionRuntimeState>(SessionRuntimeState.IDLE);
   const [inputValue, setInputValue] = useState("");
   const [emotionalState, setEmotionalState] = useState<EmotionalState>("neutral");
@@ -209,9 +219,11 @@ export const useChat = (providedSessionId?: string | null) => {
       origin: "OPTIMISTIC" // Temporary projection
     };
     
+    console.debug("[MESSAGE_STATE]", { messageId, oldState: "NEW", newState: "PENDING" });
     setMessages(prev => [...prev, userMsg]);
     setInputValue("");
     setRuntimeState(SessionRuntimeState.SENDING);
+    console.debug("[MESSAGE_STATE]", { messageId, oldState: "PENDING", newState: "SENDING" });
     resetIdleTimer();
 
     if (abortControllerRef.current) {
@@ -250,6 +262,10 @@ export const useChat = (providedSessionId?: string | null) => {
         const mapped = prev.map(m => m.id === messageId ? { ...m, origin: "CANONICAL" as const, delivery_state: "CONFIRMED" as const } : m);
         return [...mapped, saathiMsg];
       });
+      console.debug("[MESSAGE_STATE]", { messageId, oldState: "SENDING", newState: "CONFIRMED" });
+      
+      // REQUIRED: Clean up unsent queue immediately upon success
+      removeFromUnsentQueue(messageId);
       
       // Update states based on authoritative backend response
       const mappedMood = response.emotional_state as EmotionalState;
@@ -270,17 +286,26 @@ export const useChat = (providedSessionId?: string | null) => {
       // Failed to sync
       if (error instanceof MutexConflictError) {
         // Mutex conflict: Keep optimistic message, wait, and retry
+        console.debug("[MESSAGE_STATE]", { messageId, oldState: "SENDING", newState: "RETRYABLE (Mutex)" });
         setMessages(prev => prev.map(m => m.id === messageId ? { ...m, delivery_state: "RETRYABLE" as const } : m));
         handleMutexConflict();
       } else if (error instanceof VersionMismatchError) {
         // Version mismatch: Keep optimistic message, fetch canonical history, and merge
+        console.debug("[MESSAGE_STATE]", { messageId, oldState: "SENDING", newState: "RETRYABLE (Version)" });
         setMessages(prev => prev.map(m => m.id === messageId ? { ...m, delivery_state: "RETRYABLE" as const } : m));
-        setUnsentMessageQueue(prev => [...prev, userMsg]);
+        setUnsentMessageQueue(prev => {
+           if (!prev.some(m => m.id === messageId)) return [...prev, userMsg];
+           return prev;
+        });
         fetchCanonicalHistory();
       } else if (error instanceof TimeoutError || error instanceof NetworkDisconnectError) {
         // Move to retryable
+        console.debug("[MESSAGE_STATE]", { messageId, oldState: "SENDING", newState: "RETRYABLE (Network/Timeout)" });
         setMessages(prev => prev.map(m => m.id === messageId ? { ...m, delivery_state: "RETRYABLE" as const } : m));
-        setUnsentMessageQueue(prev => [...prev, userMsg]);
+        setUnsentMessageQueue(prev => {
+           if (!prev.some(m => m.id === messageId)) return [...prev, userMsg];
+           return prev;
+        });
         setRuntimeState(SessionRuntimeState.IDLE);
       } else if (error.message === "Stale Response: Generation shifted") {
         // Silently discard, the UI has already moved on via resync/reconnect
@@ -288,6 +313,7 @@ export const useChat = (providedSessionId?: string | null) => {
         // Cancelled by user action
       } else {
         // Generic failure
+        console.debug("[MESSAGE_STATE]", { messageId, oldState: "SENDING", newState: "FAILED" });
         setMessages(prev => prev.map(m => m.id === messageId ? { ...m, delivery_state: "FAILED" as const } : m));
         setRuntimeState(SessionRuntimeState.IDLE);
       }
