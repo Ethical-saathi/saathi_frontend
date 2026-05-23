@@ -112,8 +112,15 @@ export const useChat = (providedSessionId?: string | null) => {
         });
       });
 
-      // Completely overwrite local state with backend projection
-      setMessages(canonicalMessages);
+      setMessages(prev => {
+        // Preserve optimistic or pending messages that failed but shouldn't be deleted
+        const optimistic = prev.filter(m => m.delivery_state === "PENDING" || m.delivery_state === "RETRYABLE" || m.delivery_state === "FAILED");
+        // Ensure we don't duplicate canonical messages
+        const canonicalIds = new Set(canonicalMessages.map(m => m.id));
+        const filteredOptimistic = optimistic.filter(m => !canonicalIds.has(m.id));
+        
+        return [...canonicalMessages, ...filteredOptimistic];
+      });
       setRuntimeState(SessionRuntimeState.IDLE);
 
       // Replay unsent messages if any exist
@@ -190,6 +197,7 @@ export const useChat = (providedSessionId?: string | null) => {
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || !sessionId) return;
+    if (runtimeState !== SessionRuntimeState.IDLE) return; // HARD GUARD: Prevent rapid clicks
 
     const messageId = crypto.randomUUID();
     const userMsg: ChatMessage = {
@@ -261,12 +269,12 @@ export const useChat = (providedSessionId?: string | null) => {
     } catch (error: any) {
       // Failed to sync
       if (error instanceof MutexConflictError) {
-        // Strip the ghost user turn because it was blocked
-        setMessages(prev => prev.filter(m => m.id !== messageId));
+        // Mutex conflict: Keep optimistic message, wait, and retry
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, delivery_state: "RETRYABLE" as const } : m));
         handleMutexConflict();
       } else if (error instanceof VersionMismatchError) {
-        setMessages(prev => prev.filter(m => m.id !== messageId));
-        // Push user turn to unsent queue for replay after resync
+        // Version mismatch: Keep optimistic message, fetch canonical history, and merge
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, delivery_state: "RETRYABLE" as const } : m));
         setUnsentMessageQueue(prev => [...prev, userMsg]);
         fetchCanonicalHistory();
       } else if (error instanceof TimeoutError || error instanceof NetworkDisconnectError) {
