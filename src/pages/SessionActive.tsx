@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useChat } from "@/hooks/useChat";
 import { useSession } from "@/hooks/useSession";
