@@ -12,6 +12,7 @@ const SessionActive = () => {
 
   const { sessionGoal, sessionStartTime, activeSessionId, endSession } = useSession();
   const chatState = useChat(activeSessionId);
+  const [isFinalizing, setIsFinalizing] = useState(false);
 
   // Track whether we already triggered crisis routing to prevent double-fire
   const crisisTriggeredRef = useRef(false);
@@ -25,7 +26,7 @@ const SessionActive = () => {
       crisisTriggeredRef.current = true;
 
       // Clean up session context (don't leave stale active session)
-      endSession();
+      endSession().catch(console.error);
 
       // Force-route to escalation with session context for continuity
       const sessionId = activeSessionId || state?.sessionId || crypto.randomUUID();
@@ -42,19 +43,28 @@ const SessionActive = () => {
     }
   }, [chatState.emotionalState, endSession, activeSessionId, navigate, state]);
 
-  const handleEndSession = useCallback(() => {
-    endSession();
-    const id = activeSessionId || state?.sessionId || "summary";
-    navigate(`/session/summary/${id}`, {
-      state: {
-        sessionId: id,
-        goal: sessionGoal || state?.intention || "",
-        startTime: sessionStartTime,
-        mood: state?.mood || "Okay",
-        userName: state?.userName || "Friend",
-      },
-    });
-  }, [navigate, endSession, activeSessionId, sessionGoal, sessionStartTime, state]);
+  const handleEndSession = useCallback(async () => {
+    if (isFinalizing) return;
+    setIsFinalizing(true);
+    try {
+      await endSession();
+      const id = activeSessionId || state?.sessionId || "summary";
+      navigate(`/session/summary/${id}`, {
+        state: {
+          sessionId: id,
+          goal: sessionGoal || state?.intention || "",
+          startTime: sessionStartTime,
+          mood: state?.mood || "Okay",
+          userName: state?.userName || "Friend",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to end session:", error);
+      alert("Failed to finalize the session. Please try again or check your connection.");
+    } finally {
+      setIsFinalizing(false);
+    }
+  }, [navigate, endSession, activeSessionId, sessionGoal, sessionStartTime, state, isFinalizing]);
 
   return (
     <>

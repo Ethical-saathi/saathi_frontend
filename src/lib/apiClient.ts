@@ -251,5 +251,22 @@ export const apiClient = {
     }
 
     return data;
+  },
+
+  endSession: async (sessionId: string, durationMinutes: number = 30, signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/therapy/session/end', {
+      method: 'POST',
+      body: { session_id: sessionId, user_id: "placeholder", duration_minutes: durationMinutes },
+      signal
+    });
+    return data;
+  },
+
+  fetchSessions: async (signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/therapy/session/all', {
+      method: 'GET',
+      signal
+    });
+    return data;
   }
 };
