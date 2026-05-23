@@ -49,7 +49,7 @@ export interface SessionContextValue {
   setSessionGoal: (goal: string) => void;
   setSessionMood: (mood: SessionMood) => void;
   startSession: (goal: string, initialMood: string) => Promise<string>; // returns sessionId
-  endSession: () => Promise<void>;
+  endSession: () => Promise<any>;
 }
 
 // ── HELPERS ──
@@ -179,14 +179,12 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const endSession = useCallback(async () => {
-    if (!activeSessionId) return;
+    if (!activeSessionId) return null;
     
     try {
       const { apiClient } = await import("@/lib/apiClient");
-      // Calculate rough duration based on start time
-      const durationMinutes = sessionStartTime ? Math.max(1, Math.round((Date.now() - sessionStartTime) / 60000)) : 30;
       
-      await apiClient.endSession(activeSessionId, durationMinutes);
+      const payload = await apiClient.endSession(activeSessionId);
       
       // Only clear runtime state AFTER backend confirms closure
       setIsSessionActive(false);
@@ -195,12 +193,14 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       setSessionGoal("");
       setSessionMood(null);
       clearPersistedSession();
+
+      return payload;
     } catch (err) {
       console.error("Failed to end session securely:", err);
       // DO NOT clear local state if API failed - preserve state for retry
       throw err;
     }
-  }, [activeSessionId, sessionStartTime]);
+  }, [activeSessionId]);
 
   const value: SessionContextValue = {
     sessionNumber,

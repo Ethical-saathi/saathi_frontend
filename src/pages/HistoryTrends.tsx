@@ -1,18 +1,26 @@
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles, Flag, TrendingUp } from "lucide-react";
 import { VADTrendGraph, type VADTrendPoint } from "@/components/session/VADTrendGraph";
-
-// ── MOCK DATA ──
-const MOCK_TREND_DATA: VADTrendPoint[] = [];
-
-const MOCK_NOTICES: string[] = [];
-
-const MOCK_MILESTONES: { session: number; text: string }[] = [];
+import { apiClient } from "@/lib/apiClient";
 
 const HistoryTrends = () => {
   const navigate = useNavigate();
+  const [trendsData, setTrendsData] = useState<{ trends: VADTrendPoint[], themes: any[], notices: string[], milestones: any[] } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient.fetchTrends()
+      .then(data => {
+        setTrendsData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load trends:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const dateRange = useMemo(() => {
     const end = new Date();
@@ -22,6 +30,18 @@ const HistoryTrends = () => {
       d.toLocaleDateString("en-IN", { month: "short", year: "numeric" });
     return `${fmt(start)} — ${fmt(end)}`;
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex-1 overflow-y-auto w-full pb-20 flex items-center justify-center">
+        <p className="text-gray-500">Loading your emotional trends...</p>
+      </div>
+    );
+  }
+
+  const trendPoints = trendsData?.trends || [];
+  const notices = trendsData?.notices || [];
+  const milestones = trendsData?.milestones || [];
 
   return (
     <div className="flex-1 overflow-y-auto w-full pb-20">
@@ -79,7 +99,11 @@ const HistoryTrends = () => {
           >
             Emotional Trends Over Time
           </p>
-          <VADTrendGraph data={MOCK_TREND_DATA} height={280} />
+          {trendPoints.length > 0 ? (
+            <VADTrendGraph data={trendPoints} height={280} />
+          ) : (
+            <p className="text-sm text-gray-500 italic text-center py-10">Complete more sessions to see your emotional trajectory here.</p>
+          )}
         </motion.div>
 
         {/* Saathi Noticed */}
@@ -105,7 +129,7 @@ const HistoryTrends = () => {
             </p>
           </div>
           <div className="flex flex-col gap-3">
-            {MOCK_NOTICES.map((notice, i) => (
+            {notices.length > 0 ? notices.map((notice, i) => (
               <div
                 key={i}
                 className="flex items-start gap-3 text-[14px] leading-[1.6]"
@@ -119,7 +143,9 @@ const HistoryTrends = () => {
                 </span>
                 {notice}
               </div>
-            ))}
+            )) : (
+               <p className="text-gray-500 text-sm italic">Saathi is still learning about you. Complete more sessions to generate insights.</p>
+            )}
           </div>
         </motion.div>
 
@@ -148,11 +174,11 @@ const HistoryTrends = () => {
             />
 
             <div className="flex flex-col gap-5">
-              {MOCK_MILESTONES.map((milestone, i) => (
+              {milestones.length > 0 ? milestones.map((milestone, i) => (
                 <button
                   key={i}
                   onClick={() =>
-                    navigate(`/history/session_${100 + milestone.session}`)
+                    navigate(`/history/${milestone.session_id}`)
                   }
                   className="flex items-start gap-4 text-left group transition-colors"
                 >
@@ -185,7 +211,9 @@ const HistoryTrends = () => {
                     </p>
                   </div>
                 </button>
-              ))}
+              )) : (
+                <p className="text-gray-500 text-sm italic ml-6">No key moments recorded yet.</p>
+              )}
             </div>
           </div>
         </motion.div>

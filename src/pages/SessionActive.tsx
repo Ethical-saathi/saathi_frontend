@@ -47,14 +47,13 @@ const SessionActive = () => {
     if (isFinalizing) return;
     setIsFinalizing(true);
     try {
-      await endSession();
+      const payload = await endSession();
       const id = activeSessionId || state?.sessionId || "summary";
       navigate(`/session/summary/${id}`, {
         state: {
           sessionId: id,
+          summaryPayload: payload,
           goal: sessionGoal || state?.intention || "",
-          startTime: sessionStartTime,
-          mood: state?.mood || "Okay",
           userName: state?.userName || "Friend",
         },
       });

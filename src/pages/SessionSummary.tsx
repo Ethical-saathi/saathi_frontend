@@ -1,31 +1,5 @@
-import { useMemo } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, BookOpen, Lightbulb, Home } from "lucide-react";
-import { VADMiniChart, type VADDataPoint } from "@/components/session/VADMiniChart";
-
-// ── MOCK DATA ──
-const generateMockVAD = (): VADDataPoint[] => [
-  { turn: 1, valence: 0.32, arousal: 0.71, dominance: 0.28 },
-  { turn: 2, valence: 0.29, arousal: 0.68, dominance: 0.31 },
-  { turn: 3, valence: 0.35, arousal: 0.62, dominance: 0.35 },
-  { turn: 4, valence: 0.41, arousal: 0.55, dominance: 0.42 },
-  { turn: 5, valence: 0.48, arousal: 0.50, dominance: 0.48 },
-  { turn: 6, valence: 0.52, arousal: 0.45, dominance: 0.55 },
-  { turn: 7, valence: 0.58, arousal: 0.42, dominance: 0.60 },
-  { turn: 8, valence: 0.63, arousal: 0.38, dominance: 0.62 },
-  { turn: 9, valence: 0.67, arousal: 0.35, dominance: 0.68 },
-  { turn: 10, valence: 0.72, arousal: 0.33, dominance: 0.71 },
-];
-
-const MOCK_INSIGHTS = [
-  "Your anxiety appears to stem from uncertainty, not a lack of ability.",
-  "You showed strong emotional regulation in the second half of the session.",
-  "Connecting your feelings to specific triggers helped reduce arousal levels.",
-];
-
-const MOCK_HOMEWORK =
-  "Before your next session, try writing down three things that went well each day — even small ones. Notice how it feels to name them.";
+import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/apiClient";
 
 const SessionSummary = () => {
   const navigate = useNavigate();
@@ -33,31 +7,32 @@ const SessionSummary = () => {
   const location = useLocation();
   const state = location.state as any;
 
-  const vadData = useMemo(() => generateMockVAD(), []);
+  const [summaryData, setSummaryData] = useState<any>(state?.summaryPayload || null);
+  const [loading, setLoading] = useState(!state?.summaryPayload);
 
-  // Compute averages
-  const avgValence = useMemo(
-    () => vadData.reduce((s, d) => s + d.valence, 0) / vadData.length,
-    [vadData]
-  );
-  const avgArousal = useMemo(
-    () => vadData.reduce((s, d) => s + d.arousal, 0) / vadData.length,
-    [vadData]
-  );
-  const avgDominance = useMemo(
-    () => vadData.reduce((s, d) => s + d.dominance, 0) / vadData.length,
-    [vadData]
-  );
+  // Fetch canonical backend data if not present or to reconcile
+  useEffect(() => {
+    if (!sessionId) return;
+    apiClient.fetchSession(sessionId)
+      .then(data => {
+        setSummaryData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load canonical session:", err);
+        setLoading(false);
+      });
+  }, [sessionId]);
 
-  // Duration from state or fallback
-  const duration = useMemo(() => {
-    if (state?.startTime) {
-      return Math.max(1, Math.floor((Date.now() - state.startTime) / 60000));
-    }
-    return 35; // fallback mock
-  }, [state?.startTime]);
+  const vadData = summaryData?.emotional_arc ? [] : []; // We don't have per-turn VAD in summary yet unless we fetch turns, but we can plot a basic flat line or hide the chart. We will hide the chart if no data.
+  const insights = summaryData?.key_insights || [];
+  const homework = summaryData?.homework || "No specific homework for today. Just rest.";
+  const duration = summaryData?.duration_minutes || 30;
+  const sessionNum = summaryData?.session_number || 1;
 
-  const sessionNum = state?.sessionNumber || 5;
+  const avgValence = summaryData?.vad_valence_avg ?? 0.5;
+  const avgArousal = summaryData?.vad_arousal_avg ?? 0.5;
+  const avgDominance = summaryData?.vad_dominance_avg ?? 0.5;
 
   const moodLabel = (val: number) => {
     if (val >= 0.65) return "Positive";
@@ -77,6 +52,22 @@ const SessionSummary = () => {
     if (val >= 0.4) return "Moderate";
     return "Low";
   };
+
+  if (loading) {
+    return (
+      <div className="flex-1 overflow-y-auto w-full pb-20 flex items-center justify-center">
+        <p className="text-gray-500">Loading your canonical session summary...</p>
+      </div>
+    );
+  }
+
+  if (!summaryData) {
+    return (
+      <div className="flex-1 overflow-y-auto w-full pb-20 flex items-center justify-center">
+        <p className="text-red-500">Failed to load session data.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto w-full pb-20">
@@ -248,7 +239,7 @@ const SessionSummary = () => {
             </p>
           </div>
           <div className="flex flex-col gap-3">
-            {MOCK_INSIGHTS.map((insight, i) => (
+            {insights.length > 0 ? insights.map((insight: string, i: number) => (
               <div
                 key={i}
                 className="rounded-xl px-4 py-3 text-[14px] leading-[1.7]"
@@ -260,7 +251,9 @@ const SessionSummary = () => {
               >
                 {insight}
               </div>
-            ))}
+            )) : (
+              <p className="text-gray-500 italic text-sm">No specific insights generated.</p>
+            )}
           </div>
         </motion.div>
 
@@ -289,7 +282,7 @@ const SessionSummary = () => {
               fontStyle: "italic",
             }}
           >
-            {MOCK_HOMEWORK}
+            {homework}
           </p>
         </motion.div>
 
