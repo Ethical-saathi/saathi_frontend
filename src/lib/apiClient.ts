@@ -240,8 +240,8 @@ export const apiClient = {
     return data;
   },
 
-  fetchHistory: async (sessionId: string, signal?: AbortSignal): Promise<HistoryTurn[]> => {
-    const { data, generationId } = await transport.request<HistoryTurn[]>(`/chat/session/${sessionId}/history`, {
+  fetchHistory: async (sessionId: string, signal?: AbortSignal): Promise<{ turns: HistoryTurn[], session_version: number }> => {
+    const { data, generationId } = await transport.request<{ turns: HistoryTurn[], session_version: number }>(`/chat/session/${sessionId}/history`, {
       method: 'GET',
       signal
     });

@@ -83,15 +83,17 @@ export const useChat = (providedSessionId?: string | null) => {
     if (!sessionId) return false;
     try {
       setRuntimeState(SessionRuntimeState.RESYNC_REQUIRED);
-      const history = await apiClient.fetchHistory(sessionId);
+      const { turns, session_version } = await apiClient.fetchHistory(sessionId);
       
-      if (!history || history.length === 0) {
+      if (!turns || turns.length === 0) {
         setRuntimeState(SessionRuntimeState.IDLE);
         return false;
       }
       
+      currentSessionVersionRef.current = session_version;
+      
       const canonicalMessages: ChatMessage[] = [];
-      history.forEach((turn: HistoryTurn) => {
+      turns.forEach((turn: HistoryTurn) => {
         canonicalMessages.push({
           id: `u-${turn.id}`,
           sender: "user",
