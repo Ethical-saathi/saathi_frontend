@@ -160,6 +160,33 @@ const ProfilePage = () => {
           </div>
         </div>
 
+        {/* Insights & Support */}
+        <div className="mb-10">
+          <p
+            className="text-[12px] font-medium tracking-[0.1em] uppercase mb-4 px-1"
+            style={{ color: "var(--saathi-text-soft)" }}
+          >
+            Insights & Support
+          </p>
+          <div className="saathi-card flex flex-col overflow-hidden">
+            <Link
+              to="/history/trends"
+              className="px-6 py-4 flex items-center justify-between border-b transition-colors hover:bg-gray-50"
+              style={{ borderColor: "var(--saathi-border)" }}
+            >
+              <span className="text-[15px] font-medium" style={{ color: "var(--saathi-text-dark)" }}>Trends & Insights</span>
+              <span className="text-[18px]" style={{ color: "var(--saathi-text-soft)" }}>→</span>
+            </Link>
+            <Link
+              to="/help"
+              className="px-6 py-4 flex items-center justify-between transition-colors hover:bg-gray-50"
+            >
+              <span className="text-[15px] font-medium" style={{ color: "var(--saathi-text-dark)" }}>Help & Support</span>
+              <span className="text-[18px]" style={{ color: "var(--saathi-text-soft)" }}>→</span>
+            </Link>
+          </div>
+        </div>
+
         {/* Link to Settings */}
         <Link
           to="/settings"
