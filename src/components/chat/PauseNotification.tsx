@@ -12,7 +12,7 @@ export const PauseNotification = ({ onSave }: PauseNotificationProps) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 40 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className="absolute bottom-[80px] left-1/2 -translate-x-1/2 lg:left-[calc(50%+130px)] lg:-translate-x-1/2 w-fit min-w-[300px] z-30 pointer-events-auto"
+      className="fixed bottom-[80px] left-1/2 -translate-x-1/2 lg:left-[calc(50%+130px)] lg:-translate-x-1/2 w-[calc(100vw-32px)] max-w-[340px] md:w-fit md:min-w-[300px] z-[100] pointer-events-auto"
     >
       <div className="bg-white/95 backdrop-blur-md border border-[#E6E2DA] shadow-[0_8px_24px_rgba(0,0,0,0.06)] rounded-2xl p-4 flex items-center justify-between gap-6 cursor-pointer hover:bg-white transition-colors group" onClick={onSave}>
         <div className="flex flex-col">
