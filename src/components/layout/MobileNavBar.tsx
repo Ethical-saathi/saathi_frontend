@@ -5,9 +5,7 @@ const mobileNavItems = [
   { name: "Home", path: "/home", icon: Home },
   { name: "Session", path: "/session/prep", icon: Layers },
   { name: "History", path: "/history", icon: Clock },
-  { name: "Trends", path: "/history/trends", icon: TrendingUp },
   { name: "Profile", path: "/profile", icon: User },
-  { name: "Help", path: "/help", icon: HelpCircle },
 ];
 
 export const MobileNavBar = () => {
@@ -37,20 +35,20 @@ export const MobileNavBar = () => {
           <Link
             key={item.path}
             to={item.path}
-            className="flex flex-col items-center justify-center gap-1 flex-1 min-w-[48px] max-w-[72px]"
+            className="flex flex-col items-center justify-center gap-1 flex-1 min-w-[64px] max-w-[80px]"
             style={{
               color: isActive ? "var(--saathi-coral)" : "var(--saathi-text-soft)",
             }}
           >
             <div
-              className={`flex items-center justify-center w-12 h-8 rounded-full transition-colors ${
-                isActive ? "bg-[#E8643A26]" : "bg-transparent"
+              className={`flex items-center justify-center w-12 h-8 rounded-full transition-colors duration-300 ${
+                isActive ? "bg-[#E8643A12]" : "bg-transparent"
               }`}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.2 : 1.8} />
+              <Icon size={19} strokeWidth={isActive ? 2.0 : 1.6} />
             </div>
             <span
-              className="text-[10px] font-medium"
+              className="text-[9px] font-medium tracking-wide"
               style={{
                 color: isActive ? "var(--saathi-text-dark)" : "var(--saathi-text-soft)",
               }}

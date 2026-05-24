@@ -217,6 +217,25 @@ export const Profile = () => {
             )}
           </AnimatePresence>
 
+          <PanelGroup title="Insights & Support">
+            <Row label="Trends & Insights">
+              <button 
+                onClick={() => navigate("/history/trends")} 
+                className="text-[13px] text-slate-500 hover:text-slate-800 hover:underline hover:underline-offset-2 transition-colors duration-150"
+              >
+                View your trends
+              </button>
+            </Row>
+            <Row label="Help & Support">
+              <button 
+                onClick={() => navigate("/help")} 
+                className="text-[13px] text-slate-500 hover:text-slate-800 hover:underline hover:underline-offset-2 transition-colors duration-150"
+              >
+                Get help
+              </button>
+            </Row>
+          </PanelGroup>
+
           <PanelGroup title="Appearance & Preferences">
             <Row label="Chat Theme">
               <div className="flex flex-wrap gap-3 justify-end mt-1">
