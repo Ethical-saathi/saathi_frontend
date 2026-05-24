@@ -46,7 +46,7 @@ export const TimelineView = ({
   const sortedMonths = Array.from(new Set(sessions.map((s) => s.monthGroup)));
 
   // Empty state
-  if (sessions.length <= 1) {
+  if (sessions.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}

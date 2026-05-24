@@ -239,7 +239,7 @@ const SessionSummary = () => {
                   {metric.label}
                 </p>
                 <p
-                  className="text-[18px] font-medium"
+                  className={`font-medium ${metric.value === "Insufficient data" ? "text-[12px] leading-tight mt-1" : "text-[18px]"}`}
                   style={{ color: metric.color }}
                 >
                   {metric.value}
