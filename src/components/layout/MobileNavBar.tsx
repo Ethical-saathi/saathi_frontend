@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 const mobileNavItems = [
   { name: "Home", path: "/home", icon: Home },
   { name: "Session", path: "/session/prep", icon: Layers },
+  { name: "History", path: "/history", icon: Clock },
   { name: "Trends", path: "/history/trends", icon: TrendingUp },
   { name: "Profile", path: "/profile", icon: User },
 ];
