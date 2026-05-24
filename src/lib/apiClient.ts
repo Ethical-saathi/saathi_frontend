@@ -20,6 +20,14 @@ export class BackendFailureError extends Error {
 export class NetworkDisconnectError extends Error {
   constructor() { super("Network disconnected"); this.name = "NetworkDisconnectError"; }
 }
+export class RateLimitError extends Error {
+  public nextAvailableAt: string;
+  constructor(message: string, nextAvailableAt: string) { 
+    super(message); 
+    this.name = "RateLimitError"; 
+    this.nextAvailableAt = nextAvailableAt;
+  }
+}
 
 // ==========================================
 // STRICT TYPED CONTRACTS
@@ -158,6 +166,13 @@ class RESTTransportAdapter {
         if (response.status >= 500) {
           throw new BackendFailureError(`Backend returned ${response.status}`);
         }
+        if (response.status === 429) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new RateLimitError(
+            errorData.detail?.message || "You’ve completed your reflective sessions for the current 7-day period.", 
+            errorData.detail?.next_available_at || ""
+          );
+        }
         throw new Error(`API Error: ${response.status}`);
       }
 
@@ -267,6 +282,15 @@ export const apiClient = {
     const { data } = await transport.request<any>(`/therapy/session/${sessionId}`, {
       method: 'GET',
       signal
+    });
+    return data;
+  },
+
+  fetchCurrentSessionStatus: async (signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/therapy/session/current', {
+      method: 'GET',
+      signal,
+      retry: false
     });
     return data;
   },

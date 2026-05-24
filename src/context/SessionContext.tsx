@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import React, { createContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 // ── CONSTANTS (MVP: fixed values, configurable later) ──
 const TOTAL_SESSIONS = 24;
@@ -53,13 +53,7 @@ export interface SessionContextValue {
 }
 
 // ── HELPERS ──
-function calculateDaysUntilMonday(): number {
-  const now = new Date();
-  const day = now.getDay(); // 0 = Sun, 1 = Mon, ...
-  if (day === 0) return 1;
-  if (day === 1) return 7;
-  return 8 - day;
-}
+
 
 function loadPersistedSession(): PersistedSession | null {
   try {
@@ -127,10 +121,36 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [lastSessionSummary] = useState<string | null>(null);
   const [lastSessionDate] = useState<string | null>(null);
 
-  const sessionsRemaining = SESSIONS_PER_WEEK - sessionsUsedThisWeek;
-  const daysUntilReset = calculateDaysUntilMonday();
+  const [sessionsRemaining, setSessionsRemaining] = useState(SESSIONS_PER_WEEK - (persisted?.sessionsUsedThisWeek ?? 0));
+  const [nextAvailableAt, setNextAvailableAt] = useState<string | null>(null);
 
   const { user } = useAuth();
+
+  const daysUntilReset = React.useMemo(() => {
+    if (!nextAvailableAt) return 0;
+    const next = new Date(nextAvailableAt);
+    const now = new Date();
+    const diff = Math.ceil((next.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(0, diff);
+  }, [nextAvailableAt]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchStatus = async () => {
+      try {
+        const { apiClient } = await import("@/lib/apiClient");
+        const status = await apiClient.fetchCurrentSessionStatus();
+        if (status) {
+          setSessionsUsedThisWeek(status.sessions_used_this_week);
+          setSessionsRemaining(status.sessions_per_week_limit - status.sessions_used_this_week);
+          setNextAvailableAt(status.next_available_at);
+        }
+      } catch (err) {
+        console.error("Failed to fetch governance status", err);
+      }
+    };
+    fetchStatus();
+  }, [user, isSessionActive]);
   
   // Persist active session state to localStorage whenever it changes
   useEffect(() => {

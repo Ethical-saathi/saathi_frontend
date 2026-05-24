@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Target } from "lucide-react";
 import { useSession, type SessionMood } from "@/hooks/useSession";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { RateLimitError } from "@/lib/apiClient";
 
 const MOOD_OPTIONS: { id: SessionMood; emoji: string; label: string }[] = [
   { id: "Struggling", emoji: "😞", label: "Struggling" },
@@ -27,6 +28,7 @@ const SessionPrep = () => {
   const [selectedMood, setSelectedMood] = useState<SessionMood | null>(null);
   const [intention, setIntention] = useState("");
   const [isStarting, setIsStarting] = useState(false);
+  const [rateLimitError, setRateLimitError] = useState<{ message: string, nextAvailableAt: string } | null>(null);
 
   const displayName = useMemo(() => {
     return (
@@ -56,10 +58,16 @@ const SessionPrep = () => {
           contextLine: lastSessionSummary,
         },
       });
-    } catch (err) {
-      console.error("Failed to start session:", err);
+    } catch (err: any) {
       setIsStarting(false);
-      // Fallback UI or toast could go here
+      if (err.name === "RateLimitError" || err instanceof RateLimitError) {
+        setRateLimitError({
+          message: err.message,
+          nextAvailableAt: err.nextAvailableAt
+        });
+      } else {
+        console.error("Failed to start session:", err);
+      }
     }
   };
 
@@ -67,6 +75,35 @@ const SessionPrep = () => {
   return (
     <div className="flex-1 overflow-y-auto w-full pb-20">
       <div className="max-w-xl mx-auto px-6 md:px-12 py-10 md:py-16">
+
+        {rateLimitError && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm"
+          >
+            <div className="bg-[#FAF9F5] rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+              <div className="w-16 h-16 bg-[#F5EDD8] rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">
+                🌱
+              </div>
+              <h2 className="text-xl font-medium mb-3" style={{ color: "var(--saathi-text-dark)" }}>
+                Space to Reflect
+              </h2>
+              <p className="text-[15px] mb-6 leading-relaxed" style={{ color: "var(--saathi-text-mid)" }}>
+                {rateLimitError.message}
+                <br /><br />
+                Taking some space between sessions can sometimes help reflection settle before continuing.
+              </p>
+              
+              <button
+                onClick={() => navigate("/home")}
+                className="saathi-btn-coral w-full mb-3"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Greeting */}
         <motion.div
