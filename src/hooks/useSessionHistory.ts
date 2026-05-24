@@ -19,6 +19,10 @@ export interface SessionData {
   openingMood: MoodType;
   closingMood: MoodType;
   transcript: TranscriptItem[];
+  sessionNumber: number;
+  themes: string[];
+  keyMoment?: string;
+  sessionTone?: string;
 }
 
 export interface SessionHistoryResponse {
@@ -43,15 +47,45 @@ export const useSessionHistory = (sessionId?: string) => {
         
         const formattedSessions: SessionData[] = backendSessions.map((s: any) => {
           const dt = new Date(s.created_at);
+          
+          // Humanize and cap themes to 2
+          const rawThemes = Array.isArray(s.themes) ? s.themes : [];
+          const THEME_HUMANIZER: Record<string, string> = {
+            "existential_crisis": "existential uncertainty",
+            "fear_of_death": "fears around mortality",
+            "social_isolation": "social isolation",
+            "imposter_syndrome": "feelings of inadequacy",
+            "family_conflict": "family dynamics",
+            "burnout": "emotional exhaustion",
+            "abandonment_issues": "fears of abandonment",
+            "perfectionism": "high self-expectations",
+            "grief": "grief and loss",
+            "anxiety": "feelings of anxiety"
+          };
+          const humanizedThemes = rawThemes
+            .map(t => THEME_HUMANIZER[t] || t.replace(/_/g, " "))
+            .slice(0, 2);
+
+          // Get top key moment
+          let topMomentText = undefined;
+          if (Array.isArray(s.key_moments) && s.key_moments.length > 0) {
+            const sortedMoments = [...s.key_moments].sort((a, b) => (b.score || 0) - (a.score || 0));
+            topMomentText = sortedMoments[0].text;
+          }
+
           return {
             id: s.session_id,
-            date: dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+            date: dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
             monthGroup: dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
             title: s.dominant_themes?.length ? `Themes: ${s.dominant_themes.join(', ')}` : "Therapy Session",
             summary: s.summary_text || "No summary available.",
             openingMood: (s.mood_start || "Okay") as MoodType,
-            closingMood: "calm" as MoodType, // Or map from emotional_arc
-            transcript: [] // Transcript fetched on-demand if needed
+            closingMood: "calm" as MoodType,
+            transcript: [], // Transcript fetched on-demand
+            sessionNumber: s.session_number || 1,
+            themes: humanizedThemes,
+            keyMoment: topMomentText,
+            sessionTone: s.session_tone
           };
         });
 

@@ -86,10 +86,7 @@ export const TimelineView = ({
         </p>
       </motion.div>
 
-      {/* Overall Mood Arc */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.6 }}>
-        <MoodArcOverall sessions={sessions} />
-      </motion.div>
+      {/* Removed MoodArcOverall per UX redesign */}
 
       {/* Session Cards */}
       <div className="flex flex-col">
@@ -108,12 +105,24 @@ export const TimelineView = ({
               {month}
             </h2>
 
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 relative">
+              {/* Subtle vertical timeline rail */}
+              <div 
+                className="absolute left-[24px] top-4 bottom-4 w-[2px] rounded-full" 
+                style={{ background: "var(--saathi-border)", zIndex: -1 }} 
+              />
               {groupedSessions[month].map((session) => (
                 <div
                   key={session.id}
-                  className="saathi-card p-6 relative group transition-all duration-200 hover:shadow-lg"
+                  className="saathi-card p-6 relative group transition-all duration-200 hover:shadow-lg pl-16 cursor-pointer"
+                  onClick={() => onSelectSession(session.id)}
                 >
+                  {/* Timeline dot */}
+                  <div 
+                    className="absolute left-4 top-8 w-4 h-4 rounded-full border-[3px] border-white"
+                    style={{ background: "var(--saathi-coral)", boxShadow: "0 0 0 1px var(--saathi-border)" }}
+                  />
+
                   {/* Delete button */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setSessionToDelete(session.id); }}
@@ -124,45 +133,57 @@ export const TimelineView = ({
                     <Trash2 size={15} />
                   </button>
 
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[12px] tracking-wide" style={{ color: "var(--saathi-text-soft)" }}>
-                      {session.date}
-                    </span>
+                  {/* Header: Session Number & Tone Badge */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-[17px] font-medium" style={{ color: "var(--saathi-text-dark)" }}>
+                      Session {session.sessionNumber}
+                    </h3>
+                    {session.sessionTone && (
+                      <span 
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wider"
+                        style={{ background: "rgba(232,100,58,0.1)", color: "var(--saathi-coral)" }}
+                      >
+                        {session.sessionTone}
+                      </span>
+                    )}
                   </div>
-
-                  <h3 className="text-[17px] font-medium mb-1" style={{ color: "var(--saathi-text-dark)" }}>
-                    {session.title}
-                  </h3>
-
-                  {getSessionDuration(session.transcript) && (
-                    <p
-                      className="text-[12px] mb-3"
-                      style={{ color: "var(--saathi-coral)", fontFamily: "var(--font-serif)", fontStyle: "italic" }}
-                    >
-                      {getSessionDuration(session.transcript)} min session
-                    </p>
-                  )}
-
-                  <p className="text-[14px] leading-[1.7] mb-5 max-w-[90%]" style={{ color: "var(--saathi-text-mid)" }}>
-                    {session.summary}
+                  
+                  {/* Date */}
+                  <p className="text-[13px] mb-4" style={{ color: "var(--saathi-text-soft)" }}>
+                    {session.date}
                   </p>
 
-                  <div
-                    className="mb-5 rounded-xl p-3 inline-block max-w-[400px]"
-                    style={{ background: "rgba(245,237,216,0.3)", border: "1px solid var(--saathi-border)" }}
-                  >
-                    <MoodDotArc openingMood={session.openingMood} closingMood={session.closingMood} />
-                  </div>
+                  {/* Themes */}
+                  {session.themes && session.themes.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-[12px] font-medium uppercase tracking-widest mb-1" style={{ color: "var(--saathi-text-soft)" }}>
+                        Themes
+                      </p>
+                      <p className="text-[14px]" style={{ color: "var(--saathi-text-mid)" }}>
+                        {session.themes.join(", ")}
+                      </p>
+                    </div>
+                  )}
 
-                  <br />
-                  <button
-                    onClick={() => onSelectSession(session.id)}
-                    className="text-[13px] font-medium flex items-center gap-1 group/link transition-colors"
+                  {/* Key Moment */}
+                  {session.keyMoment && (
+                    <div className="mb-5 p-3 rounded-xl" style={{ background: "var(--saathi-bg)", border: "1px solid var(--saathi-border)" }}>
+                      <p className="text-[12px] font-medium uppercase tracking-widest mb-1" style={{ color: "var(--saathi-text-soft)" }}>
+                        Key Moment
+                      </p>
+                      <p className="text-[14px] leading-relaxed" style={{ color: "var(--saathi-text-dark)", fontFamily: "var(--font-serif)", fontStyle: "italic" }}>
+                        "{session.keyMoment}"
+                      </p>
+                    </div>
+                  )}
+
+                  <div
+                    className="text-[13px] font-medium flex items-center gap-1 group/link transition-colors mt-2"
                     style={{ color: "var(--saathi-coral)" }}
                   >
-                    Read full session{" "}
+                    Read full transcript{" "}
                     <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                  </button>
+                  </div>
                 </div>
               ))}
             </div>
