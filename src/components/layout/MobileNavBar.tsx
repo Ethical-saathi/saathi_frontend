@@ -1,4 +1,4 @@
-import { Home, Layers, Clock, User, TrendingUp } from "lucide-react";
+import { Home, Layers, Clock, User, TrendingUp, HelpCircle } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const mobileNavItems = [
@@ -7,6 +7,7 @@ const mobileNavItems = [
   { name: "History", path: "/history", icon: Clock },
   { name: "Trends", path: "/history/trends", icon: TrendingUp },
   { name: "Profile", path: "/profile", icon: User },
+  { name: "Help", path: "/help", icon: HelpCircle },
 ];
 
 export const MobileNavBar = () => {
@@ -36,7 +37,7 @@ export const MobileNavBar = () => {
           <Link
             key={item.path}
             to={item.path}
-            className="flex flex-col items-center justify-center gap-1 min-w-[64px]"
+            className="flex flex-col items-center justify-center gap-1 flex-1 min-w-[48px] max-w-[72px]"
             style={{
               color: isActive ? "var(--saathi-coral)" : "var(--saathi-text-soft)",
             }}
