@@ -3,6 +3,8 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { useState } from "react";
 import { Shield, Calendar, MessageCircle, User, Edit2, X, Save } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { apiClient } from "@/lib/apiClient";
 
 const ProfilePage = () => {
   const { user, userProfile } = useAuth();
@@ -12,6 +14,25 @@ const ProfilePage = () => {
   const [safetyName, setSafetyName] = useState(onboardingProfile?.safety_contact_name || "");
   const [safetyRel, setSafetyRel] = useState(onboardingProfile?.safety_contact_relationship || "");
   const [safetyPhone, setSafetyPhone] = useState(onboardingProfile?.safety_contact_phone || "");
+
+  const [totalSessions, setTotalSessions] = useState<number | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (user) {
+      apiClient.getUserStats()
+        .then(data => {
+          if (isMounted && data) {
+            setTotalSessions(data.total_sessions);
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load user stats", err);
+          if (isMounted) setTotalSessions(0);
+        });
+    }
+    return () => { isMounted = false; };
+  }, [user]);
 
   const displayName = userProfile?.first_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
   const email = user?.email || "";
@@ -57,7 +78,11 @@ const ProfilePage = () => {
               Total sessions
             </p>
             <p className="text-[16px] font-medium" style={{ color: "var(--saathi-text-dark)" }}>
-              —
+              {totalSessions === null ? (
+                <span className="inline-block w-4 h-4 border-2 border-[var(--saathi-coral)] border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                totalSessions
+              )}
             </p>
           </div>
         </div>

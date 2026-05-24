@@ -306,6 +306,14 @@ export const apiClient = {
     return data;
   },
 
+  getUserStats: async (signal?: AbortSignal): Promise<any> => {
+    const { data } = await transport.request<any>('/user/stats', {
+      method: 'GET',
+      signal
+    });
+    return data;
+  },
+
   updateUserPreferences: async (updates: any, signal?: AbortSignal): Promise<any> => {
     const { data } = await transport.request<any>('/user/preferences', {
       method: 'PATCH',
