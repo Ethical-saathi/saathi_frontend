@@ -28,33 +28,56 @@ const SessionSummary = () => {
       });
   }, [sessionId]);
 
-  const vadData = summaryData?.emotional_arc ? [] : []; // We don't have per-turn VAD in summary yet unless we fetch turns, but we can plot a basic flat line or hide the chart. We will hide the chart if no data.
-  const insights = summaryData?.key_insights || [];
+  const arc = Array.isArray(summaryData?.emotional_arc) ? summaryData.emotional_arc : [];
+  const hasArcData = arc.length > 0;
+  
+  const vadData = hasArcData ? arc.map(a => ({
+    turn: a.turn_index,
+    valence: a.valence,
+    arousal: a.arousal,
+    dominance: a.dominance
+  })) : [];
+
+  const legacyInsights = summaryData?.key_insights || [];
+  const activeThemes = summaryData?.active_themes || [];
+  const copingPatterns = summaryData?.coping_patterns || [];
+  const openLoops = summaryData?.open_loops || [];
+  const reflectiveSummary = summaryData?.reflective_summary || summaryData?.summary_text || "";
+  
   const homework = summaryData?.homework || "No specific homework for today. Just rest.";
   const duration = summaryData?.duration_minutes || 30;
   const sessionNum = summaryData?.session_number || 1;
 
-  const avgValence = summaryData?.vad_valence_avg ?? 0.5;
-  const avgArousal = summaryData?.vad_arousal_avg ?? 0.5;
-  const avgDominance = summaryData?.vad_dominance_avg ?? 0.5;
+  const avgValence = hasArcData 
+    ? arc.reduce((acc, curr) => acc + curr.valence, 0) / arc.length 
+    : (summaryData?.vad_valence_avg ?? 0);
+  const avgArousal = hasArcData 
+    ? arc.reduce((acc, curr) => acc + curr.arousal, 0) / arc.length 
+    : (summaryData?.vad_arousal_avg ?? 0);
+  const avgDominance = hasArcData 
+    ? arc.reduce((acc, curr) => acc + curr.dominance, 0) / arc.length 
+    : (summaryData?.vad_dominance_avg ?? 0);
 
   const moodLabel = (val: number) => {
-    if (val >= 0.65) return "Positive";
-    if (val >= 0.45) return "Neutral";
-    if (val >= 0.3) return "Low";
-    return "Very Low";
+    if (val === 0) return "Insufficient data";
+    if (val >= 0.65) return "Elevated tone";
+    if (val >= 0.45) return "Neutral flow";
+    if (val >= 0.3) return "Reflective";
+    return "Lower emotional tone detected";
   };
 
   const energyLabel = (val: number) => {
-    if (val >= 0.6) return "High";
-    if (val >= 0.4) return "Moderate";
-    return "Low";
+    if (val === 0) return "Insufficient data";
+    if (val >= 0.6) return "Higher energy";
+    if (val >= 0.4) return "Steady pacing";
+    return "Subdued energy";
   };
 
   const controlLabel = (val: number) => {
-    if (val >= 0.6) return "Strong";
-    if (val >= 0.4) return "Moderate";
-    return "Low";
+    if (val === 0) return "Insufficient data";
+    if (val >= 0.6) return "Grounded";
+    if (val >= 0.4) return "Processing";
+    return "Overwhelmed / Seeking anchor";
   };
 
   if (loading) {
@@ -122,13 +145,19 @@ const SessionSummary = () => {
             className="text-[12px] font-medium uppercase tracking-wider mb-4"
             style={{ color: "var(--saathi-text-soft)" }}
           >
-            Your Emotional Journey Today
+            Conversation Emotional Flow
           </p>
 
           {/* Chart */}
-          <div className="mb-5">
-            <VADMiniChart data={vadData} height={140} showTooltip showAxes />
-          </div>
+          {vadData.length > 0 ? (
+            <div className="mb-5">
+              <VADMiniChart data={vadData} height={140} showTooltip showAxes />
+            </div>
+          ) : (
+            <div className="mb-5 py-8 text-center text-sm italic" style={{ color: "var(--saathi-text-soft)" }}>
+              Not enough turn data to graph the emotional flow.
+            </div>
+          )}
 
           {/* Legend */}
           <div className="flex items-center gap-5 mb-5">
@@ -226,7 +255,7 @@ const SessionSummary = () => {
           </div>
         </motion.div>
 
-        {/* Key Insights */}
+        {/* Reflective Continuity */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -239,24 +268,84 @@ const SessionSummary = () => {
               className="text-[13px] font-medium"
               style={{ color: "var(--saathi-text-mid)" }}
             >
-              Key Takeaways
+              Reflective Continuity Summary
             </p>
           </div>
-          <div className="flex flex-col gap-3">
-            {insights.length > 0 ? insights.map((insight: string, i: number) => (
-              <div
-                key={i}
-                className="rounded-xl px-4 py-3 text-[14px] leading-[1.7]"
-                style={{
-                  background: "var(--saathi-bg)",
-                  border: "1px solid var(--saathi-border)",
-                  color: "var(--saathi-text-mid)",
-                }}
-              >
-                {insight}
+          
+          <div className="flex flex-col gap-4">
+            {reflectiveSummary && (
+              <p className="text-[14px] leading-[1.7]" style={{ color: "var(--saathi-text-mid)" }}>
+                {reflectiveSummary}
+              </p>
+            )}
+
+            {activeThemes.length > 0 && (
+              <div>
+                <p className="text-[12px] font-medium uppercase tracking-wider mb-2 mt-2" style={{ color: "var(--saathi-text-soft)" }}>
+                  Recurring Themes
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {activeThemes.map((theme: string, i: number) => (
+                    <span key={i} className="px-3 py-1 rounded-full text-[12px]" style={{ background: "rgba(224, 116, 92, 0.1)", color: "var(--saathi-coral)" }}>
+                      {theme}
+                    </span>
+                  ))}
+                </div>
               </div>
-            )) : (
-              <p className="text-gray-500 italic text-sm">No specific insights generated.</p>
+            )}
+
+            {copingPatterns.length > 0 && (
+              <div>
+                <p className="text-[12px] font-medium uppercase tracking-wider mb-2 mt-2" style={{ color: "var(--saathi-text-soft)" }}>
+                  Historical Coping
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {copingPatterns.map((pattern: string, i: number) => (
+                    <span key={i} className="px-3 py-1 rounded-full text-[12px]" style={{ background: "rgba(100, 163, 142, 0.1)", color: "var(--saathi-calm)" }}>
+                      {pattern}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {openLoops.length > 0 && (
+              <div>
+                <p className="text-[12px] font-medium uppercase tracking-wider mb-2 mt-2" style={{ color: "var(--saathi-text-soft)" }}>
+                  Open Loops
+                </p>
+                <ul className="list-disc pl-5 text-[13px]" style={{ color: "var(--saathi-text-mid)" }}>
+                  {openLoops.map((loop: string, i: number) => (
+                    <li key={i}>{loop}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Legacy Fallback */}
+            {legacyInsights.length > 0 && activeThemes.length === 0 && (
+              <div className="flex flex-col gap-3 mt-2">
+                <p className="text-[12px] font-medium uppercase tracking-wider mb-1" style={{ color: "var(--saathi-text-soft)" }}>
+                  Key Takeaways (Legacy)
+                </p>
+                {legacyInsights.map((insight: string, i: number) => (
+                  <div
+                    key={i}
+                    className="rounded-xl px-4 py-3 text-[14px] leading-[1.7]"
+                    style={{
+                      background: "var(--saathi-bg)",
+                      border: "1px solid var(--saathi-border)",
+                      color: "var(--saathi-text-mid)",
+                    }}
+                  >
+                    {insight}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {!reflectiveSummary && legacyInsights.length === 0 && (
+              <p className="text-gray-500 italic text-sm">No specific reflections generated.</p>
             )}
           </div>
         </motion.div>
