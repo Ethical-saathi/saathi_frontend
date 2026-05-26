@@ -11,6 +11,10 @@ const HistoryTrends = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    import("@/lib/posthog").then(({ captureEvent }) => {
+      captureEvent('page_viewed', { page: 'trends' });
+    });
+
     apiClient.fetchTrends()
       .then(data => {
         setTrendsData(data);

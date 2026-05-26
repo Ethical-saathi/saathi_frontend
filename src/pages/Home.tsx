@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Heart, X } from "lucide-react";
@@ -22,6 +22,12 @@ const Home = () => {
   const { homeData, isLoading, submitMoodCheckin } = useHome(sessionId);
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
   const [dismissedInsight, setDismissedInsight] = useState(false);
+
+  useEffect(() => {
+    import("@/lib/posthog").then(({ captureEvent }) => {
+      captureEvent('page_viewed', { page: 'home' });
+    });
+  }, []);
 
   const displayName = useMemo(() => {
     return (

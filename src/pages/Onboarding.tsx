@@ -81,6 +81,12 @@ export const Onboarding = () => {
       await saveSafetyContact(contact.name, contact.relationship, contact.phone);
     }
     await completeOnboarding();
+    
+    // Track onboarding completion safely (don't track answers or mood)
+    import("@/lib/posthog").then(({ captureEvent }) => {
+      captureEvent('onboarding_completed', { has_completed_onboarding: true });
+    });
+    
     navigate("/home", { replace: true });
   };
 

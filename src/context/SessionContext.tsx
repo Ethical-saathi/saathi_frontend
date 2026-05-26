@@ -191,6 +191,10 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       setSessionsUsedThisWeek((prev) => prev + 1);
       setSessionVersion(response.session_version ?? 0);
       
+      import("@/lib/posthog").then(({ captureEvent }) => {
+        captureEvent('session_started');
+      });
+      
       return id;
     } catch (err) {
       console.error("Failed to start canonical session", err);
@@ -213,6 +217,13 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       setSessionGoal("");
       setSessionMood(null);
       clearPersistedSession();
+
+      import("@/lib/posthog").then(({ captureEvent }) => {
+        captureEvent('session_completed', { 
+          session_number: sessionNumber,
+          meaningful: payload?.is_meaningful ?? true
+        });
+      });
 
       return payload;
     } catch (err) {

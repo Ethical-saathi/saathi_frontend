@@ -18,6 +18,10 @@ const ProfilePage = () => {
   const [totalSessions, setTotalSessions] = useState<number | null>(null);
 
   useEffect(() => {
+    import("@/lib/posthog").then(({ captureEvent }) => {
+      captureEvent('page_viewed', { page: 'profile' });
+    });
+
     let isMounted = true;
     if (user) {
       apiClient.getUserStats()

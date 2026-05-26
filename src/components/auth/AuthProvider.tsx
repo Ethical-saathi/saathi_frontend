@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { User, Session } from "@supabase/supabase-js";
+import { captureEvent, identifyUser, resetAnalytics } from "@/lib/posthog";
 
 interface UserProfile {
   user_id: string;
@@ -104,6 +105,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (newSession?.user) {
           // Fetch profile/roles in background
           fetchUserData(newSession.user.id);
+          identifyUser(newSession.user.id);
+          captureEvent('user_signed_in', { auth_provider: newSession.user.app_metadata.provider || 'email' });
         } else {
           setUserProfile(null);
           setRole(null);
@@ -120,6 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
     setUserProfile(null);
     setRole(null);
+    captureEvent('user_signed_out');
+    resetAnalytics();
   };
 
   return (

@@ -1,10 +1,17 @@
 import { useSessionHistory } from "@/hooks/useSessionHistory";
 import { TimelineView } from "@/components/session-history/TimelineView";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const SessionHistory = () => {
   const { data, isLoading, deleteSession } = useSessionHistory();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    import("@/lib/posthog").then(({ captureEvent }) => {
+      captureEvent('page_viewed', { page: 'history' });
+    });
+  }, []);
 
   // Skeleton loading
   if (isLoading || !data) {

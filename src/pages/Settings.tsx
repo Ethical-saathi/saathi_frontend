@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProfileSettings } from "@/hooks/useProfileSettings";
 import { Toggle } from "@/components/ui/Toggle";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +25,12 @@ export const Settings = () => {
     signOut,
   } = useProfileSettings();
   const currentTheme = useTheme();
+
+  useEffect(() => {
+    import("@/lib/posthog").then(({ captureEvent }) => {
+      captureEvent('page_viewed', { page: 'settings' });
+    });
+  }, []);
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempName, setTempName] = useState("");
